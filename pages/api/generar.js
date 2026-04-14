@@ -42,7 +42,7 @@ export default async function handler(req, res) {
     }
 
     res.status(200).json({
-      image: output[0],
+      image: output?.[0] || null,
       estilo: estilo,
       prendas: prendas
     });
