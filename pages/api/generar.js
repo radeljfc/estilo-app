@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     });
 
     const output = await replicate.run(
-      "stability-ai/sdxl",
+      "black-forest-labs/flux-schnell",
       {
         input: {
           prompt: "a fashionable man wearing a modern urban outfit, realistic photo"
@@ -17,10 +17,8 @@ export default async function handler(req, res) {
 
     console.log("OUTPUT:", output);
 
-    const image = Array.isArray(output) ? output[0] : null;
-
     return res.status(200).json({
-      image
+      image: output[0]
     });
 
   } catch (error) {
