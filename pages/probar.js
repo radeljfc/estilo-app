@@ -52,7 +52,7 @@ export default function Probar() {
 
     } catch (error) {
       console.error(error);
-      alert("Error generando imagen");
+      alert("Error: ") + error.message;
     } finally {
       setLoading(false);
     }
