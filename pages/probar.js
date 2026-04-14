@@ -1,3 +1,4 @@
+<h2>Sube tu foto v2</h2>
 import { useState } from "react";
 
 export default function Probar() {
