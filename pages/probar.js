@@ -5,24 +5,22 @@ export default function Probar() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const enviar = async () => {
-    try {
-      setLoading(true);
+ const enviar = async () => {
+  alert("botón funcionando");
 
-      const res = await fetch("/api/generar", {
-        method: "POST"
-      });
+  try {
+    const res = await fetch("/api/generar", {
+      method: "POST"
+    });
 
-      const data = await res.json();
-      setResult(data.image);
+    const data = await res.json();
+    setResult(data.image);
 
-    } catch (error) {
-      console.error(error);
-      alert("Error al generar");
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (error) {
+    alert("error en fetch");
+    console.error(error);
+  }
+};
 
   return (
     <div style={{ padding: 20 }}>
