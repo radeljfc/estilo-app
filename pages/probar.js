@@ -1,6 +1,3 @@
-<button onClick={() => window.location.href = "/"}>
-  Volver al inicio
-</button>
 import { useState } from "react"; 
 
 export default function Probar() {
@@ -65,6 +62,9 @@ export default function Probar() {
 
   return (
     <div style={{ padding: 20 }}>
+  <button onClick={() => window.location.href = "/"}>
+  Volver al inicio
+</button>
       <h2>Prueba tu estilo</h2>
 
       <input 
