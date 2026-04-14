@@ -88,7 +88,7 @@ export default function Probar() {
       });
 
       const data = await res.json();
-
+console.log("RESPUESTA IA:", data);
       setResult(data.image);
       setEstilo(data.estilo);
       setPrendas(data.prendas);
@@ -151,12 +151,14 @@ export default function Probar() {
         {loading ? "Generando..." : "Generar estilo"}
       </button>
 
-      {result && (
-        <div>
-          <h3>Resultado:</h3>
-          <img src={result} width="300" />
-        </div>
-      )}
+      {result ? (
+  <div>
+    <h3>Resultado:</h3>
+    <img src={result} width="300" />
+  </div>
+) : (
+  <p>No se pudo generar imagen</p>
+)}
 
       {estilo && (
         <div>
