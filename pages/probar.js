@@ -1,3 +1,6 @@
+<button onClick={() => window.location.href = "/"}>
+  Volver al inicio
+</button>
 import { useState } from "react"; 
 
 export default function Probar() {
