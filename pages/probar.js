@@ -27,7 +27,7 @@ export default function Probar() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          image: imageBase64
+          test: true
         })
       });
 
