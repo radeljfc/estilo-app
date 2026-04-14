@@ -1,14 +1,29 @@
+import Replicate from "replicate";
+
 export default async function handler(req, res) {
   try {
     const { imageUrl } = req.body;
 
-    console.log("URL recibida:", imageUrl);
+    const replicate = new Replicate({
+      auth: process.env.REPLICATE_API_TOKEN,
+    });
 
-    return res.status(200).json({
-      image: imageUrl
+    const output = await replicate.run(
+      "stability-ai/sdxl",
+      {
+        input: {
+          prompt: `A realistic photo of the same person in the image, wearing a modern urban outfit, black hoodie, slim jeans, white sneakers, keep same face, same hairstyle, realistic lighting`,
+          image: imageUrl
+        }
+      }
+    );
+
+    res.status(200).json({
+      image: output[0]
     });
 
   } catch (error) {
-    return res.status(500).json({ error: "error" });
+    console.error(error);
+    res.status(500).json({ error: "error IA" });
   }
 }
