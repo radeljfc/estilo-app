@@ -49,6 +49,7 @@ export default function Probar() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
+        imageUrl: result,
         estilo: estiloQuery || "urbano"
       })
     });
