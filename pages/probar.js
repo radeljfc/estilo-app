@@ -1,4 +1,4 @@
-{result && (
+ {result && (
   <div>
     <button onClick={() => window.location.href = "/"}>
       Volver al inicio
