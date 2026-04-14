@@ -8,21 +8,17 @@ export default async function handler(req, res) {
       auth: process.env.REPLICATE_API_TOKEN,
     });
 
-    const output = await replicate.run(
-      "stability-ai/sdxl",
-      {
-        input: {
-          prompt: `A realistic photo of the same person in the image, wearing a modern urban outfit, black hoodie, slim jeans, white sneakers, keep same face, same hairstyle, realistic lighting`,
-          image: imageUrl
-        }
+    const prediction = await replicate.predictions.create({
+      version: "stability-ai/sdxl",
+      input: {
+        prompt: "a man wearing modern urban outfit, realistic",
+        image: imageUrl
       }
-    );
+    });
 
-console.log("OUTPUT COMPLETO:", output);
-
-res.status(200).json({
-  image: Array.isArray(output) ? output[0] : output
-});
+    res.status(200).json({
+      image: prediction.output ? prediction.output[0] : null
+    });
 
   } catch (error) {
     console.error(error);
