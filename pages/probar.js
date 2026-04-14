@@ -5,12 +5,17 @@ export default function Probar() {
   const [result, setResult] = useState(null);
 
   const enviar = async () => {
-    const res = await fetch("/api/generar", {
-      method: "POST"
-    });
-    const data = await res.json();
-    setResult(data.image);
-  };
+  const formData = new FormData();
+  formData.append("image", image);
+
+  const res = await fetch("/api/generar", {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+  setResult(data.image);
+};
 
   return (
     <div style={{ padding: 20 }}>
