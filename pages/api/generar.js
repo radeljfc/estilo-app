@@ -10,5 +10,4 @@ export default async function handler(req, res) {
 
   } catch (error) {
     return res.status(500).json({ error: "
-<a href="/index">Ir a inicio</a>
 }
