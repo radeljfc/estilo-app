@@ -2,7 +2,7 @@ export default async function handler(req, res) {
   try {
     const { imageUrl } = req.body;
 
-    console.log("URL recibida:", imageUrl);
+    console.log("Imagen recibida:", imageUrl);
 
     return res.status(200).json({
       image: imageUrl
