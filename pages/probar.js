@@ -1,4 +1,16 @@
 import { useState, useEffect } from "react";
+const estilosDisponibles = [
+  {
+    id: "urbano",
+    nombre: "Urbano Moderno",
+    imagen: "https://i.imgur.com/1X6q9KQ.jpg"
+  },
+  {
+    id: "elegante",
+    nombre: "Elegante Casual",
+    imagen: "https://i.imgur.com/8Km9tLL.jpg"
+  }
+];
 import { useRouter } from "next/router";
 
 export default function Probar() {
@@ -99,13 +111,32 @@ export default function Probar() {
 
       <h3>Selecciona un estilo:</h3>
 
-      <button onClick={() => cambiarEstilo("urbano")}>
-        Urbano
-      </button>
+<div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+  {estilosDisponibles.map((est) => (
+    <div 
+      key={est.id}
+      style={{
+        border: "1px solid #ccc",
+        borderRadius: 10,
+        padding: 10,
+        width: 150,
+        textAlign: "center"
+      }}
+    >
+      <img 
+        src={est.imagen} 
+        width="100%" 
+        style={{ borderRadius: 10 }}
+      />
 
-      <button onClick={() => cambiarEstilo("elegante")}>
-        Elegante
+      <p>{est.nombre}</p>
+
+      <button onClick={() => cambiarEstilo(est.id)}>
+        Probar
       </button>
+    </div>
+  ))}
+</div>
 
       <br /><br />
 
