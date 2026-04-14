@@ -3,6 +3,8 @@ import { useState } from "react";
 export default function Probar() {
   const [imageBase64, setImageBase64] = useState(null);
   const [result, setResult] = useState(null);
+  const [estilo, setEstilo] = useState(null);
+  const [prendas, setPrendas] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleImage = (file) => {
@@ -50,7 +52,10 @@ export default function Probar() {
     });
 
     const data = await res.json();
+
     setResult(data.image);
+    setEstilo(data.estilo);
+    setPrendas(data.prendas);
 
   } catch (error) {
     console.error(error);
@@ -84,6 +89,22 @@ export default function Probar() {
           <img src={result} width="300" />
         </div>
       )}
+{estilo && (
+  <div>
+    <h3>Estilo: {estilo}</h3>
+  </div>
+)}
+
+{prendas.length > 0 && (
+  <div>
+    <h4>Prendas recomendadas:</h4>
+    <ul>
+      {prendas.map((p, i) => (
+        <li key={i}>{p}</li>
+      ))}
+    </ul>
+  </div>
+)}
     </div>
   );
 }
