@@ -1,7 +1,9 @@
 import { useState } from "react"; 
 import { useRouter } from "next/router";
+
 export default function Probar() {
   const router = useRouter();
+  const [imageUrl, setImageUrl] = useState(null);
   const { estilo: estiloQuery } = router.query;
   const [imageBase64, setImageBase64] = useState(null);
   const [result, setResult] = useState(null);
@@ -40,16 +42,21 @@ export default function Probar() {
 
     const cloudData = await cloudRes.json();
 
-    const imageUrl = cloudData.secure_url;
+    const uploadedUrl = cloudData.secure_url;
+    setImageUrl(uploadedUrl);
 
     // 2. Enviar URL al backend
+    if (!imageUrl) {
+  alert("Primero sube una imagen");
+  return;
+}
     const res = await fetch("/api/generar", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        imageUrl: result,
+        imageUrl: imagenUrl,
         estilo: estiloQuery || "urbano"
       })
     });
