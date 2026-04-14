@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     });
 
     const output = await replicate.run(
-      "stability-ai/sdxl:39ed52f2a78e934e9d507a5f9c8a7e9d3c6f3a3f9b3d5b6a5c6e6f7a8b9c0d1e",
+      "stability-ai/sdxl",
       {
         input: {
           prompt: "a fashionable man wearing a modern urban outfit, realistic photo"
@@ -15,13 +15,16 @@ export default async function handler(req, res) {
       }
     );
 
-    res.status(200).json({
-      image: output[0]
+    console.log("OUTPUT:", output);
+
+    const image = Array.isArray(output) ? output[0] : null;
+
+    return res.status(200).json({
+      image
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "error IA" });
+    console.error("ERROR IA:", error);
+    return res.status(500).json({ error: "error IA" });
   }
 }
- 
