@@ -3,26 +3,27 @@ import { useRouter } from "next/router";
 
 export default function Probar() {
   const router = useRouter();
-  const [imageUrl, setImageUrl] = useState(null);
+
   const { estilo: estiloQuery } = router.query;
+
   const [estiloSeleccionado, setEstiloSeleccionado] = useState("urbano");
-   useEffect(() => {
-  if (estiloQuery) {
-    setEstiloSeleccionado(estiloQuery);
-  }
-}, [estiloQuery]);
   const [imageBase64, setImageBase64] = useState(null);
   const [result, setResult] = useState(null);
   const [estilo, setEstilo] = useState(null);
   const [prendas, setPrendas] = useState([]);
   const [loading, setLoading] = useState(false);
-  
-  const cambiarEstilo = (nuevoEstilo) => {
-  setEstiloSeleccionado(nuevoEstilo);
-  router.push(`/probar?estilo=${nuevoEstilo}`);
-};
 
-const handleImage = (file) => {
+  useEffect(() => {
+    if (estiloQuery) {
+      setEstiloSeleccionado(estiloQuery);
+    }
+  }, [estiloQuery]);
+
+  const cambiarEstilo = (nuevoEstilo) => {
+    setEstiloSeleccionado(nuevoEstilo);
+    router.push(`/probar?estilo=${nuevoEstilo}`);
+  };
+
   const handleImage = (file) => {
     const reader = new FileReader();
 
@@ -34,93 +35,85 @@ const handleImage = (file) => {
       reader.readAsDataURL(file);
     }
   };
-  
 
   const enviar = async () => {
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    // 1. Obtener archivo
-    const fileInput = document.querySelector('input[type="file"]');
-    const file = fileInput.files[0];
+      const fileInput = document.querySelector('input[type="file"]');
+      const file = fileInput.files[0];
 
-    if (!file) {
-      alert("Primero sube una imagen");
-      return;
-    }
-
-    // 2. Subir a Cloudinary
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "Estiloapp");
-
-    const cloudRes = await fetch(
-      "https://api.cloudinary.com/v1_1/djk1h8mkc/image/upload",
-      {
-        method: "POST",
-        body: formData
+      if (!file) {
+        alert("Primero sube una imagen");
+        return;
       }
-    );
 
-    const cloudData = await cloudRes.json();
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "Estiloapp");
 
-    // ✅ AQUÍ se crea la URL
-    const uploadedUrl = cloudData.secure_url;
+      const cloudRes = await fetch(
+        "https://api.cloudinary.com/v1_1/djk1h8mkc/image/upload",
+        {
+          method: "POST",
+          body: formData
+        }
+      );
 
-    // ✅ AQUÍ se guarda correctamente
-    setImageUrl(uploadedUrl);
+      const cloudData = await cloudRes.json();
 
-    console.log("URL GUARDADA:", uploadedUrl);
+      const uploadedUrl = cloudData.secure_url;
 
-    // 3. Enviar al backend
-    const res = await fetch("/api/generar", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        imageUrl: uploadedUrl,
-        estilo: estiloSeleccionado
-      })
-    });
+      const res = await fetch("/api/generar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          imageUrl: uploadedUrl,
+          estilo: estiloSeleccionado
+        })
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    setResult(data.image);
-    setEstilo(data.estilo);
-    setPrendas(data.prendas);
+      setResult(data.image);
+      setEstilo(data.estilo);
+      setPrendas(data.prendas);
 
-  } catch (error) {
-    console.error(error);
-    alert("error");
-  } finally {
-    setLoading(false);
-  }
-
-};
+    } catch (error) {
+      console.error(error);
+      alert("error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div style={{ padding: 20 }}>
-  <button onClick={() => window.location.href = "/"}>
-  Volver al inicio
-</button>
+      <button onClick={() => window.location.href = "/"}>
+        Volver al inicio
+      </button>
+
       <h2>Prueba tu estilo</h2>
 
-  <h3>Selecciona un estilo:</h3>
+      <h3>Selecciona un estilo:</h3>
 
-  <button onClick={() => cambiarEstilo("urbano")}>
-    Urbano
-  </button>
+      <button onClick={() => cambiarEstilo("urbano")}>
+        Urbano
+      </button>
 
-  <button onClick={() => cambiarEstilo("elegante")}>
-    Elegante
-  </button>
-</div>
+      <button onClick={() => cambiarEstilo("elegante")}>
+        Elegante
+      </button>
+
+      <br /><br />
+
       <input 
         type="file" 
         onChange={(e) => handleImage(e.target.files[0])}
       />
-<div style={{ marginBottom: 20 }}>
+
       <br /><br />
 
       <button onClick={enviar}>
@@ -133,22 +126,23 @@ const handleImage = (file) => {
           <img src={result} width="300" />
         </div>
       )}
-{estilo && (
-  <div>
-    <h3>Estilo: {estilo}</h3>
-  </div>
-)}
 
-{prendas.length > 0 && (
-  <div>
-    <h4>Prendas recomendadas:</h4>
-    <ul>
-      {prendas.map((p, i) => (
-        <li key={i}>{p}</li>
-      ))}
-    </ul>
-  </div>
-)}
+      {estilo && (
+        <div>
+          <h3>Estilo: {estilo}</h3>
+        </div>
+      )}
+
+      {prendas.length > 0 && (
+        <div>
+          <h4>Prendas recomendadas:</h4>
+          <ul>
+            {prendas.map((p, i) => (
+              <li key={i}>{p}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
