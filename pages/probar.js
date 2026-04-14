@@ -1,6 +1,8 @@
 import { useState } from "react"; 
-
+import { useRouter } from "next/router";
 export default function Probar() {
+  const router = useRouter();
+  const { estilo: estiloQuery } = router.query;
   const [imageBase64, setImageBase64] = useState(null);
   const [result, setResult] = useState(null);
   const [estilo, setEstilo] = useState(null);
@@ -47,7 +49,7 @@ export default function Probar() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        imageUrl
+        estilo: estiloQuery || "urbano"
       })
     });
 
