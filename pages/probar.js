@@ -21,19 +21,44 @@ export default function Probar() {
   try {
     setLoading(true);
 
-    // 1. Subir imagen a Cloudinary
-    const formData = new FormData();
-    formData.append("file", document.querySelector('input[type="file"]').files[0]);
-    formData.append("upload_preset", "Estiloapp");
+    const res = await fetch("https://api.replicate.com/v1/predictions", {
+      method: "POST",
+      headers: {
+        "Authorization": "Token r8_JjlAOfxNFHT0o0wFzSt5dPurHucVliK2EHv9i",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        version: "stability-ai/sdxl",
+        input: {
+          prompt: "a fashionable man wearing a modern urban outfit, realistic photo"
+        }
+      })
+    });
 
-    const cloudRes = await fetch(
-      "https://api.cloudinary.com/v1_1/djk1h8mkc/image/upload",
-      {
-        method: "POST",
-        body: formData
-      }
-    );
+    const data = await res.json();
 
+    console.log(data);
+
+    // resultado directo (puede tardar un poco)
+    if (data?.urls?.get) {
+      const resultRes = await fetch(data.urls.get, {
+        headers: {
+          "Authorization": "Token r8_JjlAOfxNFHT0o0wFzSt5dPurHucVliK2EHv9i"
+        }
+      });
+
+      const resultData = await resultRes.json();
+
+      setResult(resultData.output?.[0]);
+    }
+
+  } catch (error) {
+    console.error(error);
+    alert("error IA");
+  } finally {
+    setLoading(false);
+  }
+};
     const cloudData = await cloudRes.json();
 
     const imageUrl = cloudData.secure_url;
