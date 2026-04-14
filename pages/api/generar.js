@@ -18,9 +18,11 @@ export default async function handler(req, res) {
       }
     );
 
-    res.status(200).json({
-      image: output[0]
-    });
+console.log("OUTPUT COMPLETO:", output);
+
+res.status(200).json({
+  image: Array.isArray(output) ? output[0] : output
+});
 
   } catch (error) {
     console.error(error);
