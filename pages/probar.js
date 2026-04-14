@@ -7,7 +7,7 @@ export default function Probar() {
   const [loading, setLoading] = useState(false);
 
  const enviar = async () => {
-  alert("botón funcionando");
+  alert("botón funcionando2");
 
   try {
     const res = await fetch("/api/generar", {
