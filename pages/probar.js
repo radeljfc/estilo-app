@@ -1,26 +1,42 @@
 import { useState } from "react";
 
 export default function Probar() {
+  const [imageBase64, setImageBase64] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const enviar = async () => {
-    alert("click detectado");
+  const handleImage = (file) => {
+    const reader = new FileReader();
 
+    reader.onloadend = () => {
+      setImageBase64(reader.result);
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const enviar = async () => {
     try {
       setLoading(true);
 
       const res = await fetch("/api/generar", {
-        method: "POST"
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          image: imageBase64
+        })
       });
 
       const data = await res.json();
-
       setResult(data.image);
 
     } catch (error) {
-      alert("error");
       console.error(error);
+      alert("error");
     } finally {
       setLoading(false);
     }
@@ -28,10 +44,12 @@ export default function Probar() {
 
   return (
     <div style={{ padding: 20 }}>
-      <h2>Prueba tu estilo v3</h2>
+      <h2>Prueba tu estilo</h2>
 
-      {/* INPUT TOTALMENTE AISLADO */}
-      <input type="file" />
+      <input 
+        type="file" 
+        onChange={(e) => handleImage(e.target.files[0])}
+      />
 
       <br /><br />
 
