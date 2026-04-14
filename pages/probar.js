@@ -1,5 +1,7 @@
 import { useState } from "react";
-
+<button onclick="window.location.href='/'">
+  Volver al inicio
+</button>
 export default function Probar() {
   const [imageBase64, setImageBase64] = useState(null);
   const [result, setResult] = useState(null);
@@ -83,7 +85,4 @@ export default function Probar() {
       )}
     </div>
   );
-<button onclick="window.location.href='/'">
-  Volver al inicio
-</button>
 }
