@@ -1,54 +1,30 @@
-import Replicate from "replicate";
-
 export default async function handler(req, res) {
   try {
     const { imageUrl, estilo } = req.body;
 
-    const replicate = new Replicate({
-      auth: process.env.REPLICATE_API_TOKEN,
-    });
-
-    // 🎯 PROMPT DINÁMICO SEGÚN ESTILO
-    let prompt = "";
-
-    if (estilo === "urbano") {
-      prompt = "a man wearing modern urban streetwear, hoodie, sneakers, realistic photo";
-    }
-
-    if (estilo === "elegante") {
-      prompt = "a man wearing elegant casual outfit, blazer, clean style, realistic photo";
-    }
-
-    // 🔥 USAMOS LA IMAGEN DEL USUARIO
-    const output = await replicate.run(
-      "stability-ai/sdxl:latest",
-      {
-        input: {
-          prompt: prompt,
-          image: imageUrl // 👈 clave
-        }
-      }
-    );
-
-    // 👕 SIMULACIÓN DE PRENDAS
+    // 👕 estilos simulados
     let prendas = [];
+    let nombreEstilo = "";
 
     if (estilo === "urbano") {
+      nombreEstilo = "Urbano Moderno";
       prendas = ["Hoodie negro", "Jeans rotos", "Zapatillas blancas"];
     }
 
     if (estilo === "elegante") {
+      nombreEstilo = "Elegante Casual";
       prendas = ["Blazer beige", "Camisa blanca", "Pantalón slim"];
     }
 
+    // 🔥 devolvemos la MISMA imagen (estable)
     res.status(200).json({
-      image: output?.[0] || null,
-      estilo: estilo,
+      image: imageUrl,
+      estilo: nombreEstilo,
       prendas: prendas
     });
 
   } catch (error) {
-    console.error("ERROR IA:", error);
-    res.status(500).json({ error: "error IA" });
+    console.error("ERROR:", error);
+    res.status(500).json({ error: "error backend" });
   }
 }
