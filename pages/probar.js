@@ -3,7 +3,7 @@
     <button onClick={() => window.location.href = "/"}>
       Volver al inicio
     </button>
-
+ 
     <h3>Resultado:</h3>
     <img src={result} width="300" />
   </div>
