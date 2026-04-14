@@ -28,9 +28,18 @@ export default function Probar() {
   try {
     setLoading(true);
 
-    // 1. Subir imagen a Cloudinary
+    // 1. Obtener archivo
+    const fileInput = document.querySelector('input[type="file"]');
+    const file = fileInput.files[0];
+
+    if (!file) {
+      alert("Primero sube una imagen");
+      return;
+    }
+
+    // 2. Subir a Cloudinary
     const formData = new FormData();
-    formData.append("file", document.querySelector('input[type="file"]').files[0]);
+    formData.append("file", file);
     formData.append("upload_preset", "Estiloapp");
 
     const cloudRes = await fetch(
@@ -43,22 +52,22 @@ export default function Probar() {
 
     const cloudData = await cloudRes.json();
 
+    // ✅ AQUÍ se crea la URL
     const uploadedUrl = cloudData.secure_url;
+
+    // ✅ AQUÍ se guarda correctamente
     setImageUrl(uploadedUrl);
 
-    // 2. Enviar URL al backend
-    if (!imageUrl) {
-  alert("Primero sube una imagen");
-  return;
-}
-    console.log("ANTES DE ENVIAR:", imageUrl);
+    console.log("URL GUARDADA:", uploadedUrl);
+
+    // 3. Enviar al backend
     const res = await fetch("/api/generar", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        imageUrl: imagenUrl,
+        imageUrl: uploadedUrl,
         estilo: estiloQuery || "urbano"
       })
     });
