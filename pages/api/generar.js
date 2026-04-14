@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
     // 🔥 USAMOS LA IMAGEN DEL USUARIO
     const output = await replicate.run(
-      "stability-ai/sdxl",
+      "stability-ai/sdxl:latest",
       {
         input: {
           prompt: prompt,
