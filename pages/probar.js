@@ -33,7 +33,7 @@ export default function Probar() {
       <h2>Prueba tu estilo</h2>
 
       <button onClick={enviar}>
-        {loading ? "Generando..." : "Generar estilo"}
+        {loading ? "Generando..." : "Generar estilaaa"}
       </button>
 
       {result && (
