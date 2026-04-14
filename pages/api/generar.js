@@ -1,11 +1,11 @@
 export default async function handler(req, res) {
   try {
-    const { image } = req.body;
+    const { imageUrl } = req.body;
 
-    console.log("imagen recibida:", image ? "sí" : "no");
+    console.log("URL recibida:", imageUrl);
 
     return res.status(200).json({
-      image: "https://picsum.photos/300/400?random=" + Math.random()
+      image: imageUrl
     });
 
   } catch (error) {
