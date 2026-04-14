@@ -18,29 +18,47 @@ export default function Probar() {
   };
 
   const enviar = async () => {
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const res = await fetch("/api/generar", {
+    // 1. Subir imagen a Cloudinary
+    const formData = new FormData();
+    formData.append("file", document.querySelector('input[type="file"]').files[0]);
+    formData.append("upload_preset", "Estiloapp");
+
+    const cloudRes = await fetch(
+      "https://api.cloudinary.com/v1_1/djk1h8mkc/image/upload",
+      {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          test: true
-        })
-      });
+        body: formData
+      }
+    );
 
-      const data = await res.json();
-      setResult(data.image);
+    const cloudData = await cloudRes.json();
 
-    } catch (error) {
-      console.error(error);
-      alert("error");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const imageUrl = cloudData.secure_url;
+
+    // 2. Enviar URL al backend
+    const res = await fetch("/api/generar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        imageUrl
+      })
+    });
+
+    const data = await res.json();
+    setResult(data.image);
+
+  } catch (error) {
+    console.error(error);
+    alert("error");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div style={{ padding: 20 }}>
