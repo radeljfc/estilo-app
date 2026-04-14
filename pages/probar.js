@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from "react"; 
 
 export default function Probar() {
   const [imageBase64, setImageBase64] = useState(null);
