@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 export default function Probar() {
   const router = useRouter();
   const [imageUrl, setImageUrl] = useState(null);
+  console.log("URL GUARDADA:", uploadedUrl);
   const { estilo: estiloQuery } = router.query;
   const [imageBase64, setImageBase64] = useState(null);
   const [result, setResult] = useState(null);
@@ -50,6 +51,7 @@ export default function Probar() {
   alert("Primero sube una imagen");
   return;
 }
+    console.log("ANTES DE ENVIAR:", imageUrl);
     const res = await fetch("/api/generar", {
       method: "POST",
       headers: {
