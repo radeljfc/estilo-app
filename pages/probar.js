@@ -83,4 +83,7 @@ export default function Probar() {
       )}
     </div>
   );
+<button onclick="window.location.href='/'">
+  Volver al inicio
+</button>
 }
