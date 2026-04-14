@@ -1,37 +1,54 @@
+import Replicate from "replicate";
+
 export default async function handler(req, res) {
   try {
     const { imageUrl, estilo } = req.body;
 
-    const estilos = {
-      urbano: {
-        nombre: "Urban Street",
-        prendas: [
-          "Hoodie negro oversized",
-          "Jeans slim fit",
-          "Zapatillas blancas",
-          "Cadena plateada"
-        ]
-      },
-      elegante: {
-        nombre: "Elegante Casual",
-        prendas: [
-          "Camisa blanca",
-          "Pantalón de vestir",
-          "Zapatos negros",
-          "Reloj clásico"
-        ]
+    const replicate = new Replicate({
+      auth: process.env.REPLICATE_API_TOKEN,
+    });
+
+    // 🎯 PROMPT DINÁMICO SEGÚN ESTILO
+    let prompt = "";
+
+    if (estilo === "urbano") {
+      prompt = "a man wearing modern urban streetwear, hoodie, sneakers, realistic photo";
+    }
+
+    if (estilo === "elegante") {
+      prompt = "a man wearing elegant casual outfit, blazer, clean style, realistic photo";
+    }
+
+    // 🔥 USAMOS LA IMAGEN DEL USUARIO
+    const output = await replicate.run(
+      "stability-ai/sdxl",
+      {
+        input: {
+          prompt: prompt,
+          image: imageUrl // 👈 clave
+        }
       }
-    };
+    );
 
-    const seleccionado = estilos[estilo] || estilos["urbano"];
+    // 👕 SIMULACIÓN DE PRENDAS
+    let prendas = [];
 
-    return res.status(200).json({
-      image: imageUrl,
-      estilo: seleccionado.nombre,
-      prendas: seleccionado.prendas
+    if (estilo === "urbano") {
+      prendas = ["Hoodie negro", "Jeans rotos", "Zapatillas blancas"];
+    }
+
+    if (estilo === "elegante") {
+      prendas = ["Blazer beige", "Camisa blanca", "Pantalón slim"];
+    }
+
+    res.status(200).json({
+      image: output[0],
+      estilo: estilo,
+      prendas: prendas
     });
 
   } catch (error) {
-    return res.status(500).json({ error: "error" });
+    console.error("ERROR IA:", error);
+    res.status(500).json({ error: "error IA" });
   }
 }
