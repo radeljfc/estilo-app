@@ -83,6 +83,9 @@ export default function Probar() {
   } finally {
     setLoading(false);
   }
+ const cambiarEstilo = (nuevoEstilo) => {
+  router.push(`/probar?estilo=${nuevoEstilo}`);
+};   
 };
 
   return (
@@ -91,7 +94,17 @@ export default function Probar() {
   Volver al inicio
 </button>
       <h2>Prueba tu estilo</h2>
+<div style={{ marginBottom: 20 }}>
+  <h3>Selecciona un estilo:</h3>
 
+  <button onClick={() => cambiarEstilo("urbano")}>
+    Urbano
+  </button>
+
+  <button onClick={() => cambiarEstilo("elegante")}>
+    Elegante
+  </button>
+</div>
       <input 
         type="file" 
         onChange={(e) => handleImage(e.target.files[0])}
