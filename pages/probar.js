@@ -1,16 +1,21 @@
-import { useState } from "react"; 
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
 export default function Probar() {
   const router = useRouter();
   const [imageUrl, setImageUrl] = useState(null);
   const { estilo: estiloQuery } = router.query;
+    useEffect(() => {
+  if (estiloQuery) {
+    setEstiloSeleccionado(estiloQuery);
+  }
+}, [estiloQuery]);
   const [imageBase64, setImageBase64] = useState(null);
   const [result, setResult] = useState(null);
   const [estilo, setEstilo] = useState(null);
   const [prendas, setPrendas] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [estiloSeleccionado, setEstiloSeleccionado] = useState("urbano");
   const handleImage = (file) => {
     const reader = new FileReader();
 
@@ -67,7 +72,7 @@ export default function Probar() {
       },
       body: JSON.stringify({
         imageUrl: uploadedUrl,
-        estilo: estiloQuery || "urbano"
+        estilo: estiloSeleccionado
       })
     });
 
@@ -84,6 +89,7 @@ export default function Probar() {
     setLoading(false);
   }
  const cambiarEstilo = (nuevoEstilo) => {
+  setEstiloSeleccionado(nuevoEstilo);
   router.push(`/probar?estilo=${nuevoEstilo}`);
 };   
 };
