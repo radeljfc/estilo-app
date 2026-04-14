@@ -5,7 +5,8 @@ export default function Probar() {
   const router = useRouter();
   const [imageUrl, setImageUrl] = useState(null);
   const { estilo: estiloQuery } = router.query;
-    useEffect(() => {
+  const [estiloSeleccionado, setEstiloSeleccionado] = useState("urbano");
+   useEffect(() => {
   if (estiloQuery) {
     setEstiloSeleccionado(estiloQuery);
   }
@@ -15,7 +16,13 @@ export default function Probar() {
   const [estilo, setEstilo] = useState(null);
   const [prendas, setPrendas] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [estiloSeleccionado, setEstiloSeleccionado] = useState("urbano");
+  
+  const cambiarEstilo = (nuevoEstilo) => {
+  setEstiloSeleccionado(nuevoEstilo);
+  router.push(`/probar?estilo=${nuevoEstilo}`);
+};
+
+const handleImage = (file) => {
   const handleImage = (file) => {
     const reader = new FileReader();
 
@@ -27,6 +34,7 @@ export default function Probar() {
       reader.readAsDataURL(file);
     }
   };
+  
 
   const enviar = async () => {
   try {
@@ -88,10 +96,7 @@ export default function Probar() {
   } finally {
     setLoading(false);
   }
- const cambiarEstilo = (nuevoEstilo) => {
-  setEstiloSeleccionado(nuevoEstilo);
-  router.push(`/probar?estilo=${nuevoEstilo}`);
-};   
+
 };
 
   return (
@@ -100,7 +105,7 @@ export default function Probar() {
   Volver al inicio
 </button>
       <h2>Prueba tu estilo</h2>
-<div style={{ marginBottom: 20 }}>
+
   <h3>Selecciona un estilo:</h3>
 
   <button onClick={() => cambiarEstilo("urbano")}>
@@ -115,7 +120,7 @@ export default function Probar() {
         type="file" 
         onChange={(e) => handleImage(e.target.files[0])}
       />
-
+<div style={{ marginBottom: 20 }}>
       <br /><br />
 
       <button onClick={enviar}>
