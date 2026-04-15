@@ -190,10 +190,6 @@ setResult({
         </div>
       )}
 
-      {prendas.length > 0 && (
-        <div>
-          <h4>Prendas recomendadas:</h4>
-<div>
 {prendas.length > 0 && (
   <div>
     <h4>Prendas recomendadas:</h4>
@@ -226,7 +222,7 @@ setResult({
       ))}
     </div>
   </div>
-)} 
+)}
     </div>
   );
 }
