@@ -1,4 +1,5 @@
 import { catalogo } from "../../data/catalogo";
+prendas = catalogo[estilo] || [];
 export default async function handler(req, res) {
   try {
     const { imageUrl, estilo } = req.body;
@@ -7,7 +8,7 @@ export default async function handler(req, res) {
     let prendas = [];
     let nombreEstilo = "";
 
-prendas = catalogo[estilo] || [];
+
 
     res.status(200).json({
       image: imageUrl, // 👈 tu imagen
