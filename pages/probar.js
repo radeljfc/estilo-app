@@ -70,7 +70,7 @@ export default function Probar() {
           method: "POST",
           body: formData
         }
-        console.log("DATA BACKEND:", data);
+        
       );
 
       const cloudData = await cloudRes.json();
@@ -89,6 +89,7 @@ export default function Probar() {
       });
 
       const data = await res.json();
+console.log("DATA BACKEND:", data);
 console.log("RESPUESTA IA:", data);
 setResult({
   user: data.image,
