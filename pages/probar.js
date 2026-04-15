@@ -57,6 +57,7 @@ export default function Probar() {
 
       if (!file) {
         alert("Primero sube una imagen");
+        setLoading(false);
         return;
       }
 
@@ -64,47 +65,46 @@ export default function Probar() {
       formData.append("file", file);
       formData.append("upload_preset", "Estiloapp");
 
+      // Subida a Cloudinary
       const cloudRes = await fetch(
         "https://api.cloudinary.com/v1_1/djk1h8mkc/image/upload",
-        {
-          method: "POST",
-          body: formData
-        }
-        
+        { method: "POST", body: formData }
       );
-
       const cloudData = await cloudRes.json();
-
       const uploadedUrl = cloudData.secure_url;
 
+      // Llamada a tu API de IA (generar.js)
       const res = await fetch("/api/generar", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           imageUrl: uploadedUrl,
-          estilo: estiloSeleccionado
+          estilo: estiloSeleccionado,
+          // Agregamos valores por defecto para que la IA no falle
+          peso: 75, 
+          altura: 175 
         })
       });
 
       const data = await res.json();
-console.log("DATA BACKEND:", data);
-console.log("RESPUESTA IA:", data);
-setResult({
-  user: data.image,
-  outfit: data.outfit
-});
-      setEstilo(data.estilo);
-      setPrendas(data.prendas);
+      
+      if (data.success) {
+        // Guardamos el resultado de la IA (imageGenerated)
+        setResult(data.imageGenerated); 
+        setEstilo(data.estilo || estiloSeleccionado);
+        setPrendas(data.prendas || []);
+      } else {
+        alert("Error en la generación");
+      }
 
     } catch (error) {
       console.error(error);
-      alert("error");
+      alert("Error de conexión");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div style={{ padding: 20 }}>
@@ -156,35 +156,20 @@ setResult({
         {loading ? "Generando..." : "Generar estilo"}
       </button>
 
-{result?.user && result?.outfit && (
+{result && (
   <div>
-    <h3>Resultado:</h3>
-
-    <div style={{ position: "relative", width: 250 }}>
+    <h3>Tu nuevo estilo:</h3>
+    <div style={{ width: "100%", maxWidth: 350 }}>
       <img 
-        src={result.user} 
-        width="250" 
-        style={{ borderRadius: 10 }}
-      />
-
-      <img 
-        src={result.outfit} 
-        width="250"
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          opacity: 0.5,
-          borderRadius: 10
-        }}
+        src={result} 
+        width="100%" 
+        style={{ borderRadius: 15, boxShadow: "0px 4px 15px rgba(0,0,0,0.1)" }}
+        alt="Resultado IA"
       />
     </div>
   </div>
 )}
 
-{intento && !result && !loading && (
-  <p>No se pudo generar imagen</p>
-)}
 
       {estilo && (
         <div>
