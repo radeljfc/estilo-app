@@ -86,23 +86,23 @@ export default function Probar() {
         })
       });
 
-      const data = await res.json();
-      
-      if (data.success) {
-        // Guardamos el resultado de la IA (imageGenerated)
-        setResult(data.imageGenerated); 
-        setEstilo(data.estilo || estiloSeleccionado);
-        setPrendas(data.prendas || []);
-      } else {
-        alert("Error en la generación");
-      }
-
-    } catch (error) {
-      console.error(error);
-      alert("Error de conexión");
-    } finally {
-      setLoading(false);
+          // ... dentro de la función enviar, después del fetch de /api/generar
+    const data = await res.json();
+    
+    if (data.success) {
+      setResult(data.imageGenerated); 
+      setEstilo(data.estilo);
+      setPrendas(data.prendas);
+    } else {
+      // ESTO TE DIRÁ EL ERROR REAL EN LA VENTANA EMERGENTE
+      alert("Error del servidor: " + data.error);
     }
+  } catch (error) {
+    alert("Error de conexión: " + error.message);
+  } finally {
+    setLoading(false);
+  }
+
   };
 
 
