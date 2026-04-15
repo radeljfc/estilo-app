@@ -11,7 +11,6 @@ export default async function handler(req, res) {
   try {
     const { imageUrl, estilo } = req.body;
 
-    // Usamos URLs directas de Unsplash para probar si Cloudinary es el problema
     const prendasPorEstilo = {
       urbano: "https://images.unsplash.com/photo-1520975916090-3105956dac38",
       elegante: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce"
@@ -19,10 +18,9 @@ export default async function handler(req, res) {
 
     const garmImg = prendasPorEstilo[estilo] || prendasPorEstilo["urbano"];
 
-    console.log("Iniciando Replicate con:", imageUrl);
-
+    // NUEVA VERSIÓN ACTUALIZADA (IDM-VTON)
     const output = await replicate.run(
-      "yisol/idm-vton:91c130948931a7bc55476b70125bc4f686976696d744b486121b66df872e4242",
+      "yisol/idm-vton:c871bb9b0e06041a4629961da79f5796f043d3c26b3add9034a78ebda517f093",
       {
         input: {
           human_img: imageUrl,
