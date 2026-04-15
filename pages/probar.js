@@ -32,77 +32,44 @@ export default function Probar() {
   }, [estiloQuery]);
 
   const enviar = async () => {
-    const fileInput = document.querySelector('input[type="file"]');
-    const file = fileInput.files[0];
-    if (!file) return alert("Sube una foto");
+  const fileInput = document.querySelector('input[type="file"]');
+  const file = fileInput.files[0];
+  if (!file) return alert("Sube una foto");
 
-    setLoading(true);
-    try {
-      // 1. Subida a Cloudinary
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", "Estiloapp");
-      const cloudRes = await fetch("https://api.cloudinary.com/v1_1/djk1h8mkc/image/upload", { method: "POST", body: formData });
-      const cloudData = await cloudRes.json();
+  setLoading(true);
+  try {
+    // 1. Subida a Cloudinary
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "Estiloapp");
+    const cloudRes = await fetch("https://api.cloudinary.com/v1_1/djk1h8mkc/image/upload", { method: "POST", body: formData });
+    const cloudData = await cloudRes.json();
 
-      // 2. Pedir a la IA que empiece
-      const res = await fetch("/api/generar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl: cloudData.secure_url, estilo: estiloSeleccionado })
-      });
-      const data = await res.json();
+    // 2. Llamada a Generar
+    const res = await fetch("/api/generar", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ imageUrl: cloudData.secure_url, estilo: estiloSeleccionado })
+    });
 
-      if (!data.success) throw new Error(data.error);
-
-      // 3. Bucle de espera (Polling)
-      let status = "starting";
-      let finalResult = null;
-      let intentos = 0;
-
-      while (status !== "succeeded" && status !== "failed" && intentos < 60) {
-        intentos++;
-        await new Promise(resolve => setTimeout(resolve, 3000)); 
-        
-        const check = await fetch(`/api/verificar?id=${data.predictionId}`);
-        const checkData = await check.json();
-        
-        status = checkData.status;
-        console.log("Estado actual:", status);
-
-        if (status === "succeeded") {
-          finalResult = checkData.output[0];
-          break; 
-        }
-        
-        if (status === "failed") {
-          throw new Error("La IA falló al procesar la imagen.");
-        }
-      }
-
-      if (finalResult) {
-        setResult(finalResult);
-        setPrendas(data.prendas);
-
-        // GUARDAR EN HISTORIAL
-        const nuevoLook = {
-          imagen: finalResult,
-          estilo: estiloSeleccionado,
-          fecha: new Date().toLocaleDateString()
-        };
-        const actualizado = [nuevoLook, ...historial].slice(0, 10);
-        setHistorial(actualizado);
-        localStorage.setItem("vesta_historial", JSON.stringify(actualizado));
-      } else {
-        alert("La IA está tardando demasiado. Revisa tu panel de Replicate.");
-      }
-
-    } catch (error) {
-      alert("Error: " + error.message);
-    } finally {
-      setLoading(false);
+    // --- NUEVO BLOQUE DE DIAGNÓSTICO ---
+    if (res.status === 404) {
+      throw new Error("No se encontró el archivo /api/generar. Revisa las carpetas en GitHub.");
     }
-  };
+    // ----------------------------------
+
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+
+    // ... (resto del código de polling)
+
+  } catch (error) {
+    alert("DETALLE DEL ERROR: " + error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div style={{ padding: '20px', fontFamily: '-apple-system, sans-serif', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
