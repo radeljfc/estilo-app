@@ -8,32 +8,31 @@ export default async function handler(req, res) {
       auth: process.env.REPLICATE_API_TOKEN,
     });
 
-    // 👕 IMÁGENES DE ROPA SEGÚN ESTILO
-    let cloth = "";
+    let prompt = "";
 
     if (estilo === "urbano") {
-      cloth = "https://i.imgur.com/3QbZ4sG.png"; // hoodie ejemplo
+      prompt = "a man wearing urban streetwear, hoodie, sneakers, keep same face, realistic photo";
     }
 
     if (estilo === "elegante") {
-      cloth = "https://i.imgur.com/0nQGJ3B.png"; // blazer ejemplo
+      prompt = "a man wearing elegant casual outfit, blazer, clean style, keep same face, realistic photo";
     }
 
-    // 🔥 MODELO TRY-ON REAL
     const output = await replicate.run(
-      "cuuupid/idm-vton",
+      "stability-ai/sdxl:latest",
       {
         input: {
-          human_img: imageUrl,
-          garm_img: cloth
+          prompt: prompt,
+          image: imageUrl,
+          strength: 0.7
         }
       }
     );
 
     res.status(200).json({
-      image: output,
+      image: output?.[0] || null,
       estilo: estilo,
-      prendas: ["Outfit aplicado con IA"]
+      prendas: ["Outfit generado con IA"]
     });
 
   } catch (error) {
