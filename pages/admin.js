@@ -13,83 +13,98 @@ export default function AdminVesta() {
   useEffect(() => { cargarDatos(); }, []);
 
   async function cargarDatos() {
-    const { data } = await supabase.from('estilos').select('*');
+    const { data, error } = await supabase.from('estilos').select('*');
+    if (error) console.error(error);
     setEstilos(data || []);
     setLoading(false);
   }
 
   const agregarEstilo = () => {
     const nuevo = {
-      id: Date.now(),
-      nombre: "Nuevo Estilo",
+      nombre: "Nueva Tendencia",
       foto_portada: "",
-      prendas: [{ id: 1, nombre: "Prenda 1", precio: 0, moneda: "USD", stock: { S:0, M:0, L:0, XL:0 }, foto: "" }]
+      prendas: [{ id: Date.now(), nombre: "Producto 1", precio: 0, moneda: "USD", stock: { S:0, M:0, L:0, XL:0 } }]
     };
     setEstilos([...estilos, nuevo]);
   };
 
   const guardarEnNube = async () => {
     setLoading(true);
-    // Borramos lo anterior y guardamos lo nuevo (simplificado)
-    await supabase.from('estilos').delete().neq('id', 0); 
-    await supabase.from('estilos').insert(estilos);
-    alert("¡Inventario actualizado globalmente!");
-    setLoading(false);
+    try {
+      // 1. Limpiamos la tabla para evitar duplicados (estrategia simple)
+      await supabase.from('estilos').delete().neq('nombre', 'borrar_todo_si_existe');
+      
+      // 2. Insertamos los estilos actuales
+      const { error } = await supabase.from('estilos').insert(estilos);
+      
+      if (error) throw error;
+      alert("✅ ¡Inventario VESTA actualizado con éxito!");
+    } catch (error) {
+      alert("❌ Error al guardar: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (loading) return <p>Cargando panel maestro...</p>;
+  if (loading) return <div style={{padding: '50px', textAlign: 'center'}}>Conectando con el servidor VESTA...</div>;
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'system-ui', backgroundColor: '#f9f9f9', minHeight: '100vh' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '30px' }}>
-        <h1 style={{ fontSize: '24px', fontWeight: '800' }}>VESTA Admin</h1>
-        <button onClick={guardarEnNube} style={{ backgroundColor: '#0070f3', color: '#fff', padding: '10px 20px', borderRadius: '10px', border: 'none', fontWeight: 'bold' }}>
-          PUBLICAR CAMBIOS
+    <div style={{ padding: '20px', fontFamily: 'system-ui', backgroundColor: '#f9f9f9', minHeight: '100vh', color: '#000' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+        <h1 style={{ fontSize: '24px', fontWeight: '800', margin: 0 }}>Panel Maestro</h1>
+        <button onClick={guardarEnNube} style={{ backgroundColor: '#0070f3', color: '#fff', padding: '12px 24px', borderRadius: '12px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
+          {loading ? "Guardando..." : "PUBLICAR CAMBIOS"}
         </button>
       </header>
 
-      <button onClick={agregarEstilo} style={{ width: '100%', padding: '15px', marginBottom: '20px', borderRadius: '10px', border: '2px dashed #ccc', background: 'none' }}>
-        + Crear Nuevo Estilo (Tendencia)
+      <button onClick={agregarEstilo} style={{ width: '100%', padding: '15px', marginBottom: '20px', borderRadius: '12px', border: '2px dashed #0070f3', background: '#fff', color: '#0070f3', fontWeight: 'bold', cursor: 'pointer' }}>
+        + Crear Nuevo Estilo
       </button>
 
       {estilos.map((estilo, idx) => (
-        <div key={estilo.id} style={{ background: '#fff', padding: '20px', borderRadius: '20px', marginBottom: '20px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-          <input 
-            style={{ fontSize: '20px', fontWeight: 'bold', border: 'none', width: '100%', marginBottom: '10px' }}
-            value={estilo.nombre}
-            onChange={(e) => {
-              const copia = [...estilos];
-              copia[idx].nombre = e.target.value;
-              setEstilos(copia);
-            }}
-          />
+        <div key={idx} style={{ background: '#fff', padding: '20px', borderRadius: '20px', marginBottom: '20px', boxShadow: '0 4px 15px rgba(0,0,0,0.08)' }}>
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#666' }}>NOMBRE DE LA TENDENCIA:</label>
+            <input 
+              style={{ fontSize: '18px', fontWeight: 'bold', border: '1px solid #eee', width: '100%', padding: '10px', borderRadius: '8px', marginTop: '5px' }}
+              value={estilo.nombre}
+              onChange={(e) => {
+                const copia = [...estilos];
+                copia[idx].nombre = e.target.value;
+                setEstilos(copia);
+              }}
+            />
+          </div>
           
-          <label style={{ fontSize: '12px', color: '#888' }}>URL Foto Portada:</label>
-          <input 
-            style={{ width: '100%', padding: '8px', marginBottom: '20px', borderRadius: '5px', border: '1px solid #eee' }}
-            value={estilo.foto_portada}
-            onChange={(e) => {
-              const copia = [...estilos];
-              copia[idx].foto_portada = e.target.value;
-              setEstilos(copia);
-            }}
-          />
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#666' }}>URL IMAGEN DE PORTADA:</label>
+            <input 
+              style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #eee', marginTop: '5px' }}
+              value={estilo.foto_portada}
+              placeholder="https://images.unsplash.com/..."
+              onChange={(e) => {
+                const copia = [...estilos];
+                copia[idx].foto_portada = e.target.value;
+                setEstilos(copia);
+              }}
+            />
+          </div>
 
-          <h3 style={{ fontSize: '16px', marginBottom: '10px' }}>Prendas y Stock:</h3>
+          <h3 style={{ fontSize: '16px', borderTop: '1px solid #f0f0f0', paddingTop: '15px', marginBottom: '15px' }}>Inventario de Prendas:</h3>
           {estilo.prendas.map((prenda, pIdx) => (
-            <div key={prenda.id} style={{ padding: '15px', border: '1px solid #f0f0f0', borderRadius: '10px', marginBottom: '10px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '10px', marginBottom: '10px' }}>
-                <input placeholder="Nombre prenda" value={prenda.nombre} onChange={(e) => {
+            <div key={pIdx} style={{ padding: '15px', backgroundColor: '#fcfcfc', borderRadius: '12px', marginBottom: '15px', border: '1px solid #f0f0f0' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '15px' }}>
+                <input placeholder="Nombre" value={prenda.nombre} style={{padding:'8px'}} onChange={(e) => {
                   const copia = [...estilos];
                   copia[idx].prendas[pIdx].nombre = e.target.value;
                   setEstilos(copia);
                 }} />
-                <input placeholder="Precio" type="number" value={prenda.precio} onChange={(e) => {
+                <input placeholder="Precio" type="number" value={prenda.precio} style={{padding:'8px'}} onChange={(e) => {
                   const copia = [...estilos];
                   copia[idx].prendas[pIdx].precio = e.target.value;
                   setEstilos(copia);
                 }} />
-                <select value={prenda.moneda} onChange={(e) => {
+                <select value={prenda.moneda} style={{padding:'8px'}} onChange={(e) => {
                   const copia = [...estilos];
                   copia[idx].prendas[pIdx].moneda = e.target.value;
                   setEstilos(copia);
@@ -97,21 +112,20 @@ export default function AdminVesta() {
                   <option value="USD">USD</option>
                   <option value="PEN">PEN</option>
                   <option value="MXN">MXN</option>
-                  <option value="EUR">EUR</option>
                 </select>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', backgroundColor: '#fff', padding: '10px', borderRadius: '8px' }}>
                 {['S', 'M', 'L', 'XL'].map(talla => (
                   <div key={talla} style={{ textAlign: 'center' }}>
-                    <span style={{ fontSize: '10px', fontWeight: 'bold' }}>{talla}</span>
+                    <div style={{ fontSize: '10px', fontWeight: 'bold', marginBottom: '5px' }}>{talla}</div>
                     <input 
                       type="number" 
-                      style={{ width: '40px', display: 'block', textAlign: 'center' }} 
+                      style={{ width: '45px', textAlign: 'center', border: '1px solid #ddd', borderRadius: '4px' }} 
                       value={prenda.stock[talla]} 
                       onChange={(e) => {
                         const copia = [...estilos];
-                        copia[idx].prendas[pIdx].stock[talla] = parseInt(e.target.value);
+                        copia[idx].prendas[pIdx].stock[talla] = parseInt(e.target.value) || 0;
                         setEstilos(copia);
                       }}
                     />
@@ -120,11 +134,18 @@ export default function AdminVesta() {
               </div>
             </div>
           ))}
-          <button onClick={() => {
-             const copia = [...estilos];
-             copia[idx].prendas.push({ id: Date.now(), nombre: "Nueva Prenda", precio: 0, moneda: "USD", stock: {S:0, M:0, L:0, XL:0}, foto: "" });
-             setEstilos(copia);
-          }} style={{ fontSize: '12px', color: '#0070f3', background: 'none', border: 'none' }}>+ Añadir otra prenda a este estilo</button>
+          
+          <div style={{display:'flex', justifyContent:'space-between'}}>
+            <button onClick={() => {
+               const copia = [...estilos];
+               copia[idx].prendas.push({ id: Date.now(), nombre: "Nueva Prenda", precio: 0, moneda: "USD", stock: {S:0, M:0, L:0, XL:0} });
+               setEstilos(copia);
+            }} style={{ fontSize: '13px', color: '#0070f3', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>+ Añadir Prenda</button>
+            
+            <button onClick={() => {
+               setEstilos(estilos.filter((_, i) => i !== idx));
+            }} style={{ fontSize: '13px', color: 'red', background: 'none', border: 'none', cursor: 'pointer' }}>Eliminar Estilo</button>
+          </div>
         </div>
       ))}
     </div>
