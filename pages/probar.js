@@ -89,7 +89,10 @@ export default function Probar() {
 
       const data = await res.json();
 console.log("RESPUESTA IA:", data);
-      setResult(Array.isArray(data.image) ? data.image[0] : data.image);
+setResult({
+  user: data.image,
+  outfit: data.outfit
+});
       setEstilo(data.estilo);
       setPrendas(data.prendas);
 
@@ -154,7 +157,12 @@ console.log("RESPUESTA IA:", data);
 {result && (
   <div>
     <h3>Resultado:</h3>
-    <img src={result} width="300" />
+
+    <p>Tu foto:</p>
+    <img src={result.user} width="150" />
+
+    <p>Estilo aplicado:</p>
+    <img src={result.outfit} width="150" />
   </div>
 )}
 
