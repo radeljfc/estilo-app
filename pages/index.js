@@ -11,6 +11,7 @@ export default function Home() {
   const router = useRouter();
   const [estilos, setEstilos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [mostrarCatalogo, setMostrarCatalogo] = useState(false); // Estado para el flujo
 
   useEffect(() => {
     async function obtenerEstilos() {
@@ -22,104 +23,112 @@ export default function Home() {
     obtenerEstilos();
   }, []);
 
+  const manejarEmpezar = () => {
+    setMostrarCatalogo(true);
+    // Pequeño delay para que la animación de scroll funcione tras mostrar el div
+    setTimeout(() => {
+      document.getElementById('catalogo-seccion').scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
   return (
     <div style={{ padding: '0', fontFamily: '-apple-system, sans-serif', backgroundColor: '#fff', minHeight: '100vh' }}>
       
-      {/* SECCIÓN DE BIENVENIDA (HERO) */}
+      {/* 1. BIENVENIDA (Siempre visible al inicio) */}
       <section style={{ 
-        padding: '60px 25px', 
-        textAlign: 'center', 
-        background: 'linear-gradient(to bottom, #f8f9fa, #fff)',
-        borderBottom: '1px solid #f0f0f0' 
+        height: '100vh', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        textAlign: 'center',
+        padding: '0 25px',
+        background: 'radial-gradient(circle at center, #fff 0%, #f8f9fa 100%)'
       }}>
-        <h1 style={{ fontSize: '48px', fontWeight: '900', letterSpacing: '-2px', margin: '0', color: '#000' }}>VESTA</h1>
-        <p style={{ color: '#0070f3', fontWeight: 'bold', fontSize: '14px', letterSpacing: '2px', marginTop: '10px', textTransform: 'uppercase' }}>
-          Tu Probador Virtual con IA
-        </p>
-        <p style={{ color: '#666', fontSize: '16px', maxWidth: '300px', margin: '20px auto', lineHeight: '1.5' }}>
-          Descubre cómo te queda la moda antes de comprarla. Sube tu foto y personaliza tu estilo.
+        <h1 style={{ fontSize: '64px', fontWeight: '900', letterSpacing: '-3px', margin: '0', color: '#000' }}>VESTA</h1>
+        <div style={{ width: '40px', height: '2px', backgroundColor: '#0070f3', margin: '20px 0' }}></div>
+        <p style={{ color: '#666', fontSize: '18px', maxWidth: '300px', lineHeight: '1.6', marginBottom: '40px' }}>
+          La revolución del probador virtual. <br/><strong>IA que viste tu realidad.</strong>
         </p>
         
-        <button 
-          onClick={() => {
-            document.getElementById('tendencias').scrollIntoView({ behavior: 'smooth' });
-          }}
-          style={{ 
-            backgroundColor: '#000', 
-            color: '#fff', 
-            padding: '15px 35px', 
-            borderRadius: '50px', 
-            border: 'none', 
-            fontWeight: 'bold',
-            fontSize: '16px',
-            boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
-            cursor: 'pointer'
-          }}
-        >
-          Empezar a Probar
-        </button>
+        {!mostrarCatalogo && (
+          <button 
+            onClick={manejarEmpezar}
+            style={{ 
+              backgroundColor: '#000', 
+              color: '#fff', 
+              padding: '18px 45px', 
+              borderRadius: '15px', 
+              border: 'none', 
+              fontWeight: 'bold',
+              fontSize: '16px',
+              cursor: 'pointer',
+              transition: 'transform 0.2s'
+            }}
+            onPointerDown={(e) => e.target.style.transform = 'scale(0.95)'}
+            onPointerUp={(e) => e.target.style.transform = 'scale(1)'}
+          >
+            Comenzar Experiencia
+          </button>
+        )}
       </section>
 
-      {/* SECCIÓN DE TENDENCIAS (Lo que traemos de Supabase) */}
-      <main id="tendencias" style={{ padding: '40px 20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
-          <h2 style={{ fontSize: '24px', fontWeight: '800', letterSpacing: '-0.5px', margin: 0 }}>Tendencias</h2>
-          <span style={{ fontSize: '12px', color: '#0070f3', fontWeight: 'bold' }}>{estilos.length} DISPONIBLES</span>
-        </div>
-        
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '50px', color: '#ccc' }}>Cargando catálogo maestro...</div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-            {estilos.map((estilo) => (
-              <div 
-                key={estilo.id} 
-                onClick={() => router.push(`/probar?estilo=${estilo.id}`)}
-                style={{ 
-                  cursor: 'pointer', 
-                  borderRadius: '24px', 
-                  overflow: 'hidden', 
-                  position: 'relative', 
-                  height: '250px', 
-                  backgroundColor: '#eee' 
-                }}
-              >
-                <img 
-                  src={estilo.foto_portada || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f'} 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                  alt={estilo.nombre}
-                />
-                <div style={{
-                  position: 'absolute', bottom: '0', left: '0', right: '0',
-                  padding: '15px', background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
-                  color: '#fff'
-                }}>
-                  <p style={{ fontSize: '16px', fontWeight: 'bold', margin: '0' }}>{estilo.nombre}</p>
-                  <p style={{ fontSize: '10px', opacity: 0.8, margin: '0' }}>Probar Ahora →</p>
+      {/* 2. CATÁLOGO DINÁMICO (Se revela al presionar el botón) */}
+      {mostrarCatalogo && (
+        <main id="catalogo-seccion" style={{ 
+          padding: '60px 20px', 
+          minHeight: '100vh',
+          animation: 'fadeIn 1s ease-in'
+        }}>
+          <style jsx>{`
+            @keyframes fadeIn {
+              from { opacity: 0; transform: translateY(20px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+          `}</style>
+
+          <h2 style={{ fontSize: '28px', fontWeight: '800', marginBottom: '30px', textAlign: 'center' }}>Selecciona una Tendencia</h2>
+          
+          {loading ? (
+            <p style={{ textAlign: 'center', color: '#888' }}>Sincronizando con el armario virtual...</p>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '25px', maxWidth: '500px', margin: '0 auto' }}>
+              {estilos.map((estilo) => (
+                <div 
+                  key={estilo.id} 
+                  onClick={() => router.push(`/probar?estilo=${estilo.id}`)}
+                  style={{ 
+                    cursor: 'pointer', 
+                    borderRadius: '30px', 
+                    overflow: 'hidden', 
+                    position: 'relative', 
+                    height: '350px',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
+                  }}
+                >
+                  <img 
+                    src={estilo.foto_portada} 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                    alt={estilo.nombre}
+                  />
+                  <div style={{
+                    position: 'absolute', bottom: '0', left: '0', right: '0',
+                    padding: '30px', background: 'linear-gradient(transparent, rgba(0,0,0,0.9))',
+                    color: '#fff'
+                  }}>
+                    <p style={{ fontSize: '24px', fontWeight: 'bold', margin: '0' }}>{estilo.nombre}</p>
+                    <p style={{ fontSize: '14px', opacity: 0.7, marginTop: '5px' }}>Toca para probar con IA →</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
 
-        {/* SI NO HAY NADA EN LA BASE DE DATOS */}
-        {estilos.length === 0 && !loading && (
-          <div style={{ textAlign: 'center', padding: '40px', background: '#f9f9f9', borderRadius: '25px', border: '2px dashed #eee' }}>
-            <p style={{ color: '#999', fontSize: '14px' }}>Configura tus estilos en el panel de administrador para comenzar.</p>
-          </div>
-        )}
-      </main>
-
-      {/* FOOTER DISCRETO */}
-      <footer style={{ padding: '60px 20px 40px', textAlign: 'center' }}>
-        <p style={{ fontSize: '10px', color: '#ccc', letterSpacing: '2px' }}>VESTA © 2026 | AI FASHION TECH</p>
-        <button 
-          onClick={() => router.push('/admin')} 
-          style={{ background: 'none', border: 'none', color: '#eee', fontSize: '10px', marginTop: '20px' }}
-        >
-          ADMIN ACCESS
-        </button>
-      </footer>
+          <footer style={{ marginTop: '80px', textAlign: 'center', opacity: 0.2 }}>
+             <button onClick={() => router.push('/admin')} style={{ background: 'none', border: 'none', fontSize: '12px' }}>CONFIGURACIÓN</button>
+          </footer>
+        </main>
+      )}
     </div>
   );
 }
