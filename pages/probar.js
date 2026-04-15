@@ -154,29 +154,29 @@ setResult({
         {loading ? "Generando..." : "Generar estilo"}
       </button>
 
-{result && (
+{result && result.user && result.outfit && (
   <div>
     <h3>Resultado:</h3>
 
     <div style={{ position: "relative", width: 250 }}>
-  <img 
-    src={result.user} 
-    width="250" 
-    style={{ borderRadius: 10 }}
-  />
+      <img 
+        src={result.user} 
+        width="250" 
+        style={{ borderRadius: 10 }}
+      />
 
-  <img 
-    src={result.outfit} 
-    width="250"
-    style={{
-      position: "absolute",
-      top: 0,
-      left: 0,
-      opacity: 0.6,
-      borderRadius: 10
-    }}
-  />
-</div>
+      <img 
+        src={result.outfit} 
+        width="250"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          opacity: 0.5,
+          borderRadius: 10
+        }}
+      />
+    </div>
   </div>
 )}
 
