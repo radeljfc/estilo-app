@@ -6,16 +6,13 @@ export default async function handler(req, res) {
 
     console.log("ESTILO:", estilo);
 
-    let outfitImg = "";
+    let outfitImg = null;
 
-    if (estilo === "urbano") {
-      outfitImg = "https://images.unsplash.com/photo-1520975916090-3105956dac38";
-    }
-
-    if (estilo === "elegante") {
-      outfitImg = "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce";
-    }
-
+if (estilo === "urbano") {
+  outfitImg = "https://images.unsplash.com/photo-1520975916090-3105956dac38";
+} else if (estilo === "elegante") {
+  outfitImg = "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce";
+}
     const prendas = catalogo[estilo] || [];
 
     res.status(200).json({
