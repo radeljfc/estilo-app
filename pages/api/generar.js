@@ -2,7 +2,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ success: false });
 
   const token = process.env.REPLICATE_API_TOKEN;
-  if (!token) return res.status(500).json({ error: "Falta el Token en Vercel" });
+  if (!token) return res.status(500).json({ error: "Falta el TOKEN en Vercel" });
 
   try {
     const { imageUrl, estilo } = req.body;
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 
     const garmImg = prendasPorEstilo[estilo] || prendasPorEstilo["urbano"];
 
-    // LLAMADA ESTÁNDAR POR VERSIÓN (La más compatible)
+    // LLAMADA CON LA VERSIÓN EXACTA DE LA DOCUMENTACIÓN
     const response = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
       headers: {
@@ -22,20 +22,21 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        // Versión específica del modelo IDM-VTON
-        version: "0513734a81fd5382025816922cf90082f4d38c62c3e41df473950b7308d278bd",
+        // Esta es la versión que acabas de encontrar:
+        version: "0513734a452173b8173e907e3a59d19a36266e55b48528559432bd21c7d7e985",
         input: {
           human_img: imageUrl,
           garm_img: garmImg,
-          garment_des: "clothing",
-          is_checked: true
+          garment_des: estilo === "urbano" ? "urban street style top" : "elegant casual top",
+          is_checked: true,
+          is_checked_det_lib: false,
+          mask_target: "upper_body"
         }
       })
     });
 
     const data = await response.json();
 
-    // Si Replicate devuelve error, lo enviamos al iPhone para leerlo
     if (data.detail) {
       return res.status(422).json({ success: false, error: "Replicate dice: " + data.detail });
     }
@@ -43,12 +44,10 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       predictionId: data.id,
-      prendas: [
-        { nombre: "Prenda VESTA", precio: "Consultar", imagen: garmImg, link: "#" }
-      ]
+      prendas: [{ nombre: "Look VESTA", precio: "Original", imagen: garmImg, link: "#" }]
     });
 
   } catch (error) {
-    return res.status(500).json({ success: false, error: "Error Servidor: " + error.message });
+    return res.status(500).json({ success: false, error: "Error: " + error.message });
   }
 }
