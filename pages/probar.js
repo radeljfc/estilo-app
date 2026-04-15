@@ -57,7 +57,7 @@ export default function Probar() {
       let finalResult = null;
       let intentos = 0;
 
-      while (status !== "succeeded" && status !== "failed" && intentos < 30) {
+      while (status !== "succeeded" && status !== "failed" && intentos < 60) {
         intentos++;
         // Esperamos 3 segundos entre cada chequeo
         await new Promise(resolve => setTimeout(resolve, 3000)); 
@@ -127,22 +127,23 @@ export default function Probar() {
       <section style={{ marginBottom: '30px', backgroundColor: '#fff', padding: '20px', borderRadius: '20px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
         <h3 style={{ fontSize: '18px', marginBottom: '15px' }}>2. Sube tu foto:</h3>
         <input type="file" accept="image/*" style={{ marginBottom: '20px', width: '100%' }} />
-        <button 
-          onClick={enviar}
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '15px',
-            borderRadius: '12px',
-            backgroundColor: '#000',
-            color: '#fff',
-            fontSize: '16px',
-            fontWeight: 'bold',
-            border: 'none'
-          }}
-        >
-          {loading ? "Procesando con IA..." : "Generar Mi Look"}
-        </button>
+<button 
+  onClick={enviar}
+  disabled={loading}
+  style={{
+    width: '100%',
+    padding: '15px',
+    borderRadius: '12px',
+    backgroundColor: '#000',
+    color: '#fff',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    border: 'none'
+  }}
+>
+  {loading ? `IA trabajando... (Espera un momento)` : "Generar Mi Look"}
+</button>
+
       </section>
 
       {result && (
