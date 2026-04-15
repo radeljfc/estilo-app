@@ -6,17 +6,17 @@ export default async function handler(req, res) {
     let prendas = [];
     let nombreEstilo = "";
 
-    if (estilo === "urbano") {
-      outfitImg = "https://i.imgur.com/1X6q9KQ.jpg";
-      prendas = ["Hoodie negro", "Jeans rotos", "Zapatillas blancas"];
-      nombreEstilo = "Urbano Moderno";
-    }
+if (estilo === "urbano") {
+  outfitImg = "https://pngimg.com/uploads/jacket/jacket_PNG8055.png";
+  prendas = ["Chaqueta urbana", "Jeans", "Zapatillas"];
+  nombreEstilo = "Urbano Moderno";
+}
 
-    if (estilo === "elegante") {
-      outfitImg = "https://i.imgur.com/8Km9tLL.jpg";
-      prendas = ["Blazer beige", "Camisa blanca", "Pantalón slim"];
-      nombreEstilo = "Elegante Casual";
-    }
+if (estilo === "elegante") {
+  outfitImg = "https://pngimg.com/uploads/suit/suit_PNG93227.png";
+  prendas = ["Blazer", "Camisa", "Pantalón"];
+  nombreEstilo = "Elegante Casual";
+}
 
     res.status(200).json({
       image: imageUrl, // 👈 tu imagen
