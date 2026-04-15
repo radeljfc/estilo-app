@@ -15,7 +15,7 @@ const catalogo = {
     {
       nombre: "Zapatillas blancas",
       precio: "S/ 200",
-      imagen: "URL?w=500",
+      imagen: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500",
       link: "https://wa.me/51914680763?text=Quiero%20la%20opcion"
     }
   ],
