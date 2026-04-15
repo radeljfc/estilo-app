@@ -30,41 +30,47 @@ export default function Probar() {
   const enviar = async () => {
     const fileInput = document.querySelector('input[type="file"]');
     const file = fileInput.files[0];
-
-    if (!file) return alert("Por favor, sube una foto primero.");
+    if (!file) return alert("Sube una foto");
 
     setLoading(true);
     try {
+      // 1. Subida a Cloudinary
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", "Estiloapp");
-
-      const cloudRes = await fetch("https://api.cloudinary.com/v1_1/djk1h8mkc/image/upload", {
-        method: "POST",
-        body: formData
-      });
+      const cloudRes = await fetch("https://api.cloudinary.com/v1_1/djk1h8mkc/image/upload", { method: "POST", body: formData });
       const cloudData = await cloudRes.json();
 
+      // 2. Pedir a la IA que empiece
       const res = await fetch("/api/generar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          imageUrl: cloudData.secure_url,
-          estilo: estiloSeleccionado,
-          peso: 75, // Valores base por ahora
-          altura: 175
-        })
+        body: JSON.stringify({ imageUrl: cloudData.secure_url, estilo: estiloSeleccionado })
       });
-
       const data = await res.json();
-      if (data.success) {
-        setResult(data.imageGenerated);
+
+      if (!data.success) throw new Error(data.error);
+
+      // 3. Bucle de espera (Polling)
+      let status = "starting";
+      let finalResult = null;
+
+      while (status !== "succeeded" && status !== "failed") {
+        await new Promise(resolve => setTimeout(resolve, 3000)); // Esperar 3 seg
+        const check = await fetch(`/api/verificar?id=${data.predictionId}`);
+        const checkData = await check.json();
+        status = checkData.status;
+        if (status === "succeeded") finalResult = checkData.output[0];
+      }
+
+      if (finalResult) {
+        setResult(finalResult);
         setPrendas(data.prendas);
       } else {
-        alert("Error: " + data.error);
+        alert("La IA no pudo procesar la imagen");
       }
     } catch (error) {
-      alert("Error de conexión");
+      alert("Error: " + error.message);
     } finally {
       setLoading(false);
     }
