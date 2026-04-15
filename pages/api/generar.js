@@ -1,26 +1,29 @@
+// pages/api/generar.js
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: "Método no permitido" });
+  if (req.method !== 'POST') return res.status(405).json({ success: false });
 
   const token = process.env.REPLICATE_API_TOKEN;
-  if (!token) return res.status(500).json({ error: "Falta el token en Vercel (REPLICATE_API_TOKEN)" });
-
-  const { imageUrl, estilo } = req.body;
-  
-  // Fotos de las prendas (Urbano vs Elegante)
-  const garmImg = estilo === "elegante" 
-    ? "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce" 
-    : "https://images.unsplash.com/photo-1520975916090-3105956dac38";
+  if (!token) return res.status(500).json({ error: "Falta REPLICATE_API_TOKEN en Vercel" });
 
   try {
-    const response = await fetch("https://api.replicate.com/v1/predictions", {
+    const { imageUrl, estilo } = req.body;
+
+    // 1. Fotos de prendas por defecto (para Urbano vs Elegante)
+    const prendasPorEstilo = {
+      urbano: "https://images.unsplash.com/photo-1520975916090-3105956dac38", // Prenda urbana por defecto
+      elegante: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce"  // Prenda elegante por defecto
+    };
+
+    const garmImg = prendasPorEstilo[estilo] || prendasPorEstilo["urbano"];
+
+    // 2. LLAMADA DIRECTA AL MODELO (sin depender de una ID de versión)
+    const response = await fetch("https://api.replicate.com/v1/models/cuuupid/idm-vton/predictions", {
       method: "POST",
       headers: {
         "Authorization": `Token ${token.trim()}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        // ESTA ES LA VERSIÓN QUE TE FUNCIONÓ EN LA WEB
-        version: "0513734a81fd5382025816922cf90082f4d38c62c3e41df473950b7308d278bd",
         input: {
           human_img: imageUrl,
           garm_img: garmImg,
@@ -32,6 +35,7 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
+    // Si Replicate nos da un error, lo atrapamos y lo mostramos
     if (data.detail) {
       return res.status(422).json({ success: false, error: "Replicate dice: " + data.detail });
     }
@@ -39,13 +43,14 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       predictionId: data.id,
-      // Datos del catálogo directo para evitar errores de archivo
+      estilo: estilo,
+      // 3. Catálogo "en línea" para evitar errores de archivo
       prendas: [
-        { nombre: "Chaqueta VESTA", precio: "$45", imagen: garmImg, link: "#" }
+        { nombre: `Look VESTA ${estilo}`, precio: "$0 (Prueba)", imagen: garmImg, link: "#" }
       ]
     });
 
   } catch (error) {
-    return res.status(500).json({ success: false, error: error.message });
+    return res.status(500).json({ success: false, error: "Error de servidor: " + error.message });
   }
 }
