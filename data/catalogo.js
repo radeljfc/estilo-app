@@ -43,6 +43,3 @@ const catalogo = {
 };
 
 export default catalogo;
-
-console.log("ESTILO:", estilo);
-console.log("CATALOGO:", catalogo[estilo]);
