@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { createClient } from '@supabase/supabase-js';
 
+// Conexión a la base de datos
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -12,10 +13,11 @@ export default function Home() {
   const [estilos, setEstilos] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Carga las tendencias desde Supabase al iniciar
   useEffect(() => {
     async function obtenerEstilos() {
       const { data, error } = await supabase.from('estilos').select('*');
-      if (error) console.error(error);
+      if (error) console.error("Error cargando estilos:", error);
       else setEstilos(data || []);
       setLoading(false);
     }
@@ -23,16 +25,16 @@ export default function Home() {
   }, []);
 
   const iniciarExperiencia = () => {
-    const section = document.getElementById('catalogo-vesta');
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
+    const catalogo = document.getElementById('catalogo-real');
+    if (catalogo) {
+      catalogo.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
   return (
-    <div style={{ backgroundColor: '#000', minHeight: '100vh', color: '#fff', fontFamily: '-apple-system, sans-serif' }}>
+    <div style={{ backgroundColor: '#fff', minHeight: '100vh', color: '#000', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
       
-      {/* 1. BIENVENIDA (ALTO CONTRASTE) */}
+      {/* SECCIÓN 1: BIENVENIDA ORIGINAL (ESTILO MINIMALISTA) */}
       <section style={{ 
         height: '100vh', 
         display: 'flex', 
@@ -40,110 +42,104 @@ export default function Home() {
         justifyContent: 'center', 
         alignItems: 'center', 
         textAlign: 'center',
-        padding: '0 30px'
+        padding: '0 20px'
       }}>
         <h1 style={{ 
-          fontSize: '72px', 
+          fontSize: '56px', 
           fontWeight: '900', 
-          letterSpacing: '-4px', 
+          letterSpacing: '-3px', 
           margin: '0',
-          textTransform: 'uppercase'
+          color: '#000'
         }}>VESTA</h1>
         
-        <div style={{ 
-          height: '4px', 
-          width: '60px', 
-          backgroundColor: '#fff', 
-          margin: '30px 0' 
-        }}></div>
+        <p style={{ 
+          color: '#666', 
+          fontSize: '14px', 
+          textTransform: 'uppercase', 
+          letterSpacing: '4px', 
+          marginTop: '10px' 
+        }}>Virtual Fitting Room</p>
+
+        <div style={{ width: '30px', height: '2px', backgroundColor: '#000', margin: '30px 0' }}></div>
 
         <p style={{ 
-          fontSize: '20px', 
-          maxWidth: '320px', 
-          lineHeight: '1.4', 
-          fontWeight: '300',
-          marginBottom: '50px',
-          letterSpacing: '0.5px'
+          fontSize: '18px', 
+          maxWidth: '300px', 
+          lineHeight: '1.6', 
+          color: '#333',
+          marginBottom: '40px' 
         }}>
           Bienvenido a la nueva era de la moda. 
-          <span style={{ fontWeight: 'bold', display: 'block', marginTop: '10px' }}>
-            Tu probador inteligente con IA.
-          </span>
+          <span style={{ fontWeight: 'bold', display: 'block' }}>Tu probador inteligente con IA.</span>
         </p>
-        
+
         <button 
           onClick={iniciarExperiencia}
           style={{ 
-            backgroundColor: '#fff', 
-            color: '#000', 
-            padding: '20px 50px', 
-            borderRadius: '0',
+            backgroundColor: '#000', 
+            color: '#fff', 
+            padding: '18px 45px', 
+            borderRadius: '50px', 
             border: 'none', 
-            fontWeight: '900',
-            fontSize: '14px',
-            textTransform: 'uppercase',
-            letterSpacing: '2px',
-            cursor: 'pointer'
+            fontWeight: 'bold',
+            fontSize: '15px',
+            cursor: 'pointer',
+            boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
           }}
         >
-          Iniciar Probador
+          Probar Estilos
         </button>
       </section>
 
-      {/* 2. CATÁLOGO (FONDO BLANCO) */}
-      <main id="catalogo-vesta" style={{ padding: '80px 20px', backgroundColor: '#fff', color: '#000' }}>
-        <h2 style={{ 
-          fontSize: '32px', 
-          fontWeight: '900', 
-          textAlign: 'center', 
-          marginBottom: '10px',
-          letterSpacing: '-1px'
-        }}>TENDENCIAS</h2>
-        <p style={{ textAlign: 'center', color: '#888', marginBottom: '50px', fontSize: '14px' }}>
-          Selecciona un estilo para procesar con IA
-        </p>
+      {/* SECCIÓN 2: CATÁLOGO DINÁMICO (TUS NUEVAS FUNCIONES) */}
+      <main id="catalogo-real" style={{ padding: '60px 20px', backgroundColor: '#fff' }}>
+        <h2 style={{ fontSize: '24px', fontWeight: '800', marginBottom: '30px', textAlign: 'center' }}>Selecciona tu Tendencia</h2>
         
         {loading ? (
-          <p style={{ textAlign: 'center' }}>Cargando catálogo maestro...</p>
+          <p style={{ textAlign: 'center', color: '#999' }}>Sincronizando armario...</p>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '40px', maxWidth: '600px', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', maxWidth: '800px', margin: '0 auto' }}>
             {estilos.map((estilo) => (
               <div 
                 key={estilo.id} 
                 onClick={() => router.push(`/probar?estilo=${estilo.id}`)}
-                style={{ cursor: 'pointer', position: 'relative' }}
+                style={{ 
+                  cursor: 'pointer', 
+                  borderRadius: '20px', 
+                  overflow: 'hidden', 
+                  position: 'relative', 
+                  height: '280px',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.05)'
+                }}
               >
                 <img 
                   src={estilo.foto_portada} 
-                  style={{ 
-                    width: '100%', 
-                    height: '450px', 
-                    objectFit: 'cover'
-                  }} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                   alt={estilo.nombre}
                 />
                 <div style={{
-                  position: 'absolute', 
-                  bottom: '20px', 
-                  left: '20px', 
-                  right: '20px',
-                  backgroundColor: '#fff',
-                  padding: '20px',
-                  boxShadow: '10px 10px 0px #000'
+                  position: 'absolute', bottom: '0', left: '0', right: '0',
+                  padding: '15px', background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
+                  color: '#fff'
                 }}>
-                  <p style={{ fontSize: '12px', fontWeight: '900', margin: '0', color: '#888' }}>ESTILO</p>
-                  <p style={{ fontSize: '22px', fontWeight: '900', margin: '0', textTransform: 'uppercase' }}>{estilo.nombre}</p>
+                  <p style={{ fontSize: '14px', fontWeight: 'bold', margin: '0' }}>{estilo.nombre}</p>
                 </div>
               </div>
             ))}
           </div>
         )}
+
+        {/* SI NO HAY ESTILOS EN EL ADMIN */}
+        {estilos.length === 0 && !loading && (
+          <div style={{ textAlign: 'center', padding: '40px', border: '1px dashed #ccc', borderRadius: '20px' }}>
+            <p style={{ color: '#999' }}>No hay estilos publicados aún.</p>
+          </div>
+        )}
       </main>
 
-      {/* 3. FOOTER */}
-      <footer style={{ padding: '60px 20px', textAlign: 'center', backgroundColor: '#fff', color: '#000', borderTop: '1px solid #eee' }}>
-        <p style={{ fontSize: '10px', letterSpacing: '4px', opacity: 0.5 }}>VESTA LABS © 2026</p>
-        <button onClick={() => router.push('/admin')} style={{ marginTop: '20px', background: 'none', border: 'none', color: '#ccc', fontSize: '10px', cursor: 'pointer' }}>ADMIN</button>
+      {/* FOOTER DISCRETO */}
+      <footer style={{ padding: '60px 20px', textAlign: 'center', opacity: 0.2 }}>
+        <button onClick={() => router.push('/admin')} style={{ background: 'none', border: 'none', fontSize: '10px', cursor: 'pointer' }}>MASTER ADMIN</button>
       </footer>
     </div>
   );
