@@ -70,6 +70,7 @@ export default function Probar() {
           method: "POST",
           body: formData
         }
+        console.log("DATA BACKEND:", data);
       );
 
       const cloudData = await cloudRes.json();
@@ -154,7 +155,7 @@ setResult({
         {loading ? "Generando..." : "Generar estilo"}
       </button>
 
-{result && result.user && result.outfit && (
+{result?.user && result?.outfit && (
   <div>
     <h3>Resultado:</h3>
 
