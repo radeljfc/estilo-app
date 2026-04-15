@@ -1,37 +1,19 @@
 export default async function handler(req, res) {
+  const { id } = req.query;
   const token = process.env.REPLICATE_API_TOKEN;
 
-  // 1. Verificamos si el token existe
-  if (!token) {
-    return res.status(200).json({ 
-      error: "EL TOKEN NO EXISTE EN VERCEL. Revisa las variables de entorno." 
-    });
+  if (!id || id === "undefined") {
+    return res.status(400).json({ error: "ID de predicción no recibido" });
   }
 
-  // 2. Verificamos si el token tiene el formato correcto (empieza por r8_)
-  if (!token.trim().startsWith("r8_")) {
-    return res.status(200).json({ 
-      error: "EL TOKEN TIENE UN FORMATO INVÁLIDO. Debe empezar por r8_." 
-    });
-  }
-
-  // 3. Intentamos una llamada mínima a Replicate para ver si nos rechaza
   try {
-    const response = await fetch("https://api.replicate.com/v1/models/cuuupid/idm-vton", {
+    const response = await fetch(`https://api.replicate.com/v1/predictions/${id}`, {
       headers: { "Authorization": `Token ${token.trim()}` }
     });
     
-    if (response.status === 401) {
-      return res.status(200).json({ error: "TOKEN NO AUTORIZADO. El token es incorrecto o expiró." });
-    }
-
-    return res.status(200).json({ 
-      success: true, 
-      mensaje: "¡TOKEN CONECTADO CORRECTAMENTE!",
-      status_replicate: response.status
-    });
-
+    const result = await response.json();
+    res.status(200).json(result);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 }
