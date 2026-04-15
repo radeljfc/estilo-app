@@ -23,13 +23,16 @@ export default function Home() {
   }, []);
 
   const iniciarExperiencia = () => {
-    document.getElementById('catalogo-vesta').scrollIntoView({ behavior: 'smooth' });
+    const section = document.getElementById('catalogo-vesta');
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
     <div style={{ backgroundColor: '#000', minHeight: '100vh', color: '#fff', fontFamily: '-apple-system, sans-serif' }}>
       
-      {/* PANTALLA DE BIENVENIDA (Alto Contraste) */}
+      {/* 1. BIENVENIDA (ALTO CONTRASTE) */}
       <section style={{ 
         height: '100vh', 
         display: 'flex', 
@@ -37,8 +40,7 @@ export default function Home() {
         justifyContent: 'center', 
         alignItems: 'center', 
         textAlign: 'center',
-        padding: '0 30px',
-        borderBottom: '1px solid #333'
+        padding: '0 30px'
       }}>
         <h1 style={{ 
           fontSize: '72px', 
@@ -75,7 +77,7 @@ export default function Home() {
             backgroundColor: '#fff', 
             color: '#000', 
             padding: '20px 50px', 
-            borderRadius: '0', // Estilo minimalista cuadrado o con poco radio
+            borderRadius: '0',
             border: 'none', 
             fontWeight: '900',
             fontSize: '14px',
@@ -88,7 +90,7 @@ export default function Home() {
         </button>
       </section>
 
-      {/* SECCIÓN DE CATÁLOGO (Revelación al hacer Scroll) */}
+      {/* 2. CATÁLOGO (FONDO BLANCO) */}
       <main id="catalogo-vesta" style={{ padding: '80px 20px', backgroundColor: '#fff', color: '#000' }}>
         <h2 style={{ 
           fontSize: '32px', 
@@ -102,7 +104,7 @@ export default function Home() {
         </p>
         
         {loading ? (
-          <p style={{ textAlign: 'center' }}>Cargando catálogo...</p>
+          <p style={{ textAlign: 'center' }}>Cargando catálogo maestro...</p>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '40px', maxWidth: '600px', margin: '0 auto' }}>
             {estilos.map((estilo) => (
@@ -116,8 +118,7 @@ export default function Home() {
                   style={{ 
                     width: '100%', 
                     height: '450px', 
-                    objectFit: 'cover',
-                    filter: 'grayscale(20%)', // Un toque de contraste para las fotos
+                    objectFit: 'cover'
                   }} 
                   alt={estilo.nombre}
                 />
@@ -128,7 +129,7 @@ export default function Home() {
                   right: '20px',
                   backgroundColor: '#fff',
                   padding: '20px',
-                  boxShadow: '10px 10px 0px #000' // Sombra de alto contraste
+                  boxShadow: '10px 10px 0px #000'
                 }}>
                   <p style={{ fontSize: '12px', fontWeight: '900', margin: '0', color: '#888' }}>ESTILO</p>
                   <p style={{ fontSize: '22px', fontWeight: '900', margin: '0', textTransform: 'uppercase' }}>{estilo.nombre}</p>
@@ -137,12 +138,12 @@ export default function Home() {
             ))}
           </div>
         )}
-      </section>
+      </main>
 
-      {/* FOOTER */}
+      {/* 3. FOOTER */}
       <footer style={{ padding: '60px 20px', textAlign: 'center', backgroundColor: '#fff', color: '#000', borderTop: '1px solid #eee' }}>
         <p style={{ fontSize: '10px', letterSpacing: '4px', opacity: 0.5 }}>VESTA LABS © 2026</p>
-        <button onClick={() => router.push('/admin')} style={{ marginTop: '20px', background: 'none', border: 'none', color: '#ccc', fontSize: '10px' }}>ADMIN</button>
+        <button onClick={() => router.push('/admin')} style={{ marginTop: '20px', background: 'none', border: 'none', color: '#ccc', fontSize: '10px', cursor: 'pointer' }}>ADMIN</button>
       </footer>
     </div>
   );
