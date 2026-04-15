@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ success: false });
 
   const token = process.env.REPLICATE_API_TOKEN;
-  const VERSION_ID = "0513734a81fd5382025816922cf90082f4d38c62c3e41df473950b7308d278bd";
+  const VERSION_ID = "ac732d54604f39e3b79488cd7a863c374571853a4ae3f8683574163993967a18";
 
   try {
     const { imageUrl, estilo } = req.body;
