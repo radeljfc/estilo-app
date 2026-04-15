@@ -100,11 +100,22 @@ export default function Probar() {
         </button>
       </section>
       {/* Mostrar resultado si existe */}
-      {result && (
-        <section style={{ marginTop: '30px', textAlign: 'center' }}>
-          <img src={result} style={{ width: '100%', maxWidth: '400px', borderRadius: '25px' }} />
-        </section>
-      )}
+      // En la parte del resultado (donde está el img del resultado)
+{result && (
+  <section style={{ marginTop: '30px', textAlign: 'center' }}>
+    <h3 style={{ fontSize: '22px', marginBottom: '15px' }}>¡Tu Look está listo!</h3>
+    <img 
+      src={result} 
+      key={result} // Esto obliga al iPhone a recargar la imagen si cambia
+      style={{ width: '100%', maxWidth: '400px', borderRadius: '25px', display: 'block', margin: '0 auto' }} 
+      onError={(e) => {
+        console.log("Reintentando carga...");
+        setTimeout(() => { e.target.src = result + "?t=" + new Date().getTime(); }, 2000);
+      }}
+    />
+  </section>
+)}
+
     </div>
   );
 }
