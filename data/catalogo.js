@@ -36,7 +36,7 @@ const catalogo = {
     {
       nombre: "Pantalón slim",
       precio: "S/ 180",
-      imagen: "https://images.unsplash.com/photo-1528701800489-20be3c9c1d2b?w=500",
+      imagen: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500",
       link: "https://wa.me/51914680763?text=Quiero%20la%20opcion"
     }
   ]
