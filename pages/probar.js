@@ -41,11 +41,10 @@ export default function Probar() {
       
       const cloudData = await cloudRes.json();
       
-      // DIAGNÓSTICO 1: ¿Cloudinary nos dio una URL?
       if (!cloudData.secure_url) {
-        throw new Error("Cloudinary no devolvió URL. Revisa tu 'Upload Preset' en Cloudinary.");
+        throw new Error("Cloudinary no devolvió URL. Revisa tu preset.");
       }
-      alert("Foto subida a Cloudinary con éxito!");
+      alert("Foto subida con éxito!");
 
       // 2. Llamada a la API Generar
       const res = await fetch("/api/generar", {
@@ -57,7 +56,7 @@ export default function Probar() {
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
 
-      // 3. ESPERA (Polling) - Esto faltaba en tu código
+      // 3. Polling (Espera a Replicate)
       let status = "starting";
       let finalData = null;
 
@@ -65,67 +64,65 @@ export default function Probar() {
         const checkRes = await fetch(`/api/verificar?id=${data.predictionId}`);
         finalData = await checkRes.json();
         status = finalData.status;
-        if (status === "failed") throw new Error("La IA falló al procesar la imagen.");
-        if (status !== "succeeded") await new Promise(r => setTimeout(r, 3000)); // Espera 3 segundos
+        if (status === "failed") throw new Error("La IA falló al procesar.");
+        if (status !== "succeeded") await new Promise(r => setTimeout(r, 3000));
       }
 
       // 4. Mostrar Resultado
-            // 4. Mostrar Resultado (Copia y pega esto sobre tu sección 4)
       if (finalData && finalData.output) {
-        // Esta línea extrae la imagen final correctamente aunque sea una lista
-        const nuevaImagen = Array.isArray(finalData.output) 
+        // CORRECCIÓN AQUÍ: Definimos la variable correctamente
+        const urlFinal = Array.isArray(finalData.output) 
           ? finalData.output[finalData.output.length - 1] 
           : finalData.output;
         
-        setResult(nuevaImagen);
+        setResult(urlFinal);
         setPrendas(data.prendas || []);
 
-        // Guardar en historial
-        const nuevoHistorial = [{ imagen: nuevaImagen, estilo: estiloSeleccionado }, ...historial].slice(0, 10);
+        const nuevoHistorial = [{ imagen: urlFinal, estilo: estiloSeleccionado }, ...historial].slice(0, 10);
         setHistorial(nuevoHistorial);
         localStorage.setItem("vesta_historial", JSON.stringify(nuevoHistorial));
-      } else {
-        throw new Error("La IA terminó pero no entregó una imagen válida.");
       }
 
-
-      // Guardar en historial
-      const nuevoHistorial = [{ imagen: nuevaImagen, estilo: estiloSeleccionado }, ...historial].slice(0, 10);
-      setHistorial(nuevoHistorial);
-      localStorage.setItem("vesta_historial", JSON.stringify(nuevoHistorial));
-
     } catch (error) {
-      alert("DETALLE DEL ERROR: " + error.message);
+      alert("DETALLE: " + error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // ... (Aquí va todo tu bloque de RETURN que ya tenías, está perfecto)
   return (
     <div style={{ padding: '20px', fontFamily: '-apple-system, sans-serif', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
       <button onClick={() => router.push("/")} style={{ border: 'none', background: 'none', color: '#0070f3', fontSize: '16px', marginBottom: '20px' }}> ← Volver </button>
       <h2 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '10px' }}>Refina tu Estilo</h2>
-      {/* ... el resto de tu diseño es igual ... */}
-      <section style={{ marginBottom: '30px', backgroundColor: '#fff', padding: '20px', borderRadius: '20px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+      
+      <section style={{ marginBottom: '30px' }}>
+        <h3 style={{ fontSize: '18px', color: '#666' }}>1. Selecciona la tendencia:</h3>
+        <div style={{ display: "flex", gap: '15px', overflowX: 'auto', padding: '10px 0' }}>
+          {estilosDisponibles.map((est) => (
+            <div key={est.id} onClick={() => setEstiloSeleccionado(est.id)} style={{ flex: '0 0 140px', border: estiloSeleccionado === est.id ? '2px solid #0070f3' : '1px solid #ddd', borderRadius: '15px', padding: '10px', textAlign: "center", backgroundColor: '#fff' }}>
+              <img src={est.imagen} width="100%" style={{ borderRadius: '10px', height: '120px', objectFit: 'cover' }} />
+              <p style={{ marginTop: '8px', fontSize: '14px' }}>{est.nombre}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginBottom: '30px', backgroundColor: '#fff', padding: '20px', borderRadius: '20px' }}>
         <h3 style={{ fontSize: '18px', marginBottom: '15px' }}>2. Sube tu foto:</h3>
         <input type="file" accept="image/*" style={{ marginBottom: '20px', width: '100%' }} />
-        <button onClick={enviar} disabled={loading} style={{ width: '100%', padding: '15px', borderRadius: '12px', backgroundColor: '#000', color: '#fff', fontSize: '16px', fontWeight: 'bold', border: 'none' }}>
+        <button onClick={enviar} disabled={loading} style={{ width: '100%', padding: '15px', borderRadius: '12px', backgroundColor: '#000', color: '#fff', fontWeight: 'bold' }}>
           {loading ? `IA trabajando...` : "Generar Mi Look"}
         </button>
-            </section>
+      </section>
 
-      {/* RESULTADO ACTUAL */}
       {result && (
         <section style={{ marginTop: '30px', textAlign: 'center' }}>
           <h3 style={{ fontSize: '22px', marginBottom: '15px' }}>¡Tu Look está listo!</h3>
           <img 
             src={result} 
-            key={result} 
-            style={{ width: '100%', maxWidth: '400px', borderRadius: '25px', display: 'block', margin: '0 auto', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} 
+            key={result}
+            style={{ width: '100%', maxWidth: '400px', borderRadius: '25px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} 
             onError={(e) => {
-              // Si falla la carga (cuadro azul), intenta recargar 3 veces
-              console.log("Reintentando carga...");
               setTimeout(() => { e.target.src = result + "?t=" + new Date().getTime(); }, 2000);
             }}
           />
