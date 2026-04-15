@@ -6,18 +6,20 @@ const replicate = new Replicate({
 });
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== 'POST') return res.status(405).json({ success: false, error: "Metodo no permitido" });
 
   try {
-    const { imageUrl, estilo, peso, altura } = req.body;
+    const { imageUrl, estilo } = req.body;
 
-    // IMPORTANTE: Cambia estas URLs por fotos de PRENDAS SOLAS en tu Cloudinary
+    // Usamos URLs directas de Unsplash para probar si Cloudinary es el problema
     const prendasPorEstilo = {
-      urbano: "https://res.cloudinary.com/djk1h8mkc/image/upload/v1/prendas/urbano.jpg",
-      elegante: "https://res.cloudinary.com/djk1h8mkc/image/upload/v1/prendas/elegante.jpg"
+      urbano: "https://images.unsplash.com/photo-1520975916090-3105956dac38",
+      elegante: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce"
     };
 
     const garmImg = prendasPorEstilo[estilo] || prendasPorEstilo["urbano"];
+
+    console.log("Iniciando Replicate con:", imageUrl);
 
     const output = await replicate.run(
       "yisol/idm-vton:91c130948931a7bc55476b70125bc4f686976696d744b486121b66df872e4242",
@@ -25,22 +27,23 @@ export default async function handler(req, res) {
         input: {
           human_img: imageUrl,
           garm_img: garmImg,
-          garment_des: `A ${estilo} outfit for a person, ${peso}kg, ${altura}cm`,
+          garment_des: `outfit ${estilo}`,
           is_checked: true
         }
       }
     );
 
-    // Enviamos 'imageGenerated' para que coincida con el frontend
-    res.status(200).json({
+    const resultadoIA = Array.isArray(output) ? output[0] : output;
+
+    return res.status(200).json({
       success: true,
-      imageGenerated: Array.isArray(output) ? output[0] : output,
+      imageGenerated: resultadoIA,
       estilo: estilo,
       prendas: catalogo[estilo] || []
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, error: error.message });
+    console.error("DETALLE ERROR:", error.message);
+    return res.status(500).json({ success: false, error: error.message });
   }
 }
