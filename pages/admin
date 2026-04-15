@@ -1,0 +1,66 @@
+import { useState } from 'react';
+
+export default function Admin() {
+  const [estilos, setEstilos] = useState([]); // Aquí cargarías tu catalogoInicial
+
+  const agregarEstilo = () => {
+    const nuevo = {
+      id: Date.now().toString(),
+      nombre: "Nuevo Estilo",
+      fotoPortada: "",
+      prendas: []
+    };
+    setEstilos([...estilos, nuevo]);
+  };
+
+  return (
+    <div style={{ padding: '30px', fontFamily: 'sans-serif', backgroundColor: '#f4f4f4', minHeight: '100vh' }}>
+      <h1 style={{ fontWeight: 'bold', fontSize: '24px' }}>Panel de Control VESTA</h1>
+      <button onClick={agregarEstilo} style={{ backgroundColor: '#000', color: '#fff', padding: '10px 20px', borderRadius: '8px', marginBottom: '20px' }}>
+        + Agregar Nuevo Estilo
+      </button>
+
+      <div style={{ display: 'grid', gap: '20px' }}>
+        {estilos.map((estilo, idx) => (
+          <div key={estilo.id} style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '15px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+            <div style={{ display: 'flex', gap: '20px', marginBottom: '15px' }}>
+              <div style={{ flex: 1 }}>
+                <label>Nombre del Estilo:</label>
+                <input 
+                  value={estilo.nombre} 
+                  onChange={(e) => {
+                    const copia = [...estilos];
+                    copia[idx].nombre = e.target.value;
+                    setEstilos(copia);
+                  }}
+                  style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label>URL Foto Portada:</label>
+                <input 
+                  value={estilo.fotoPortada}
+                  onChange={(e) => {
+                    const copia = [...estilos];
+                    copia[idx].fotoPortada = e.target.value;
+                    setEstilos(copia);
+                  }}
+                  style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+                />
+              </div>
+              <button onClick={() => setEstilos(estilos.filter(e => e.id !== estilo.id))} style={{ color: 'red', border: 'none', background: 'none' }}>Eliminar Estilo</button>
+            </div>
+
+            <h4 style={{ borderTop: '1px solid #eee', paddingTop: '10px' }}>Prendas en este estilo:</h4>
+            {/* Aquí mapearías las prendas y sus tallas/stock */}
+            <button style={{ fontSize: '12px', padding: '5px' }}>+ Añadir Prenda</button>
+          </div>
+        ))}
+      </div>
+      
+      <button style={{ marginTop: '40px', width: '100%', padding: '20px', backgroundColor: '#0070f3', color: '#fff', border: 'none', borderRadius: '10px', fontWeight: 'bold' }}>
+        GUARDAR CAMBIOS EN LA NUBE
+      </button>
+    </div>
+  );
+}
