@@ -89,7 +89,7 @@ export default function Probar() {
 
       const data = await res.json();
 console.log("RESPUESTA IA:", data);
-      setResult(data.image);
+      setResult(Array.isArray(data.image) ? data.image[0] : data.image);
       setEstilo(data.estilo);
       setPrendas(data.prendas);
 
