@@ -33,7 +33,21 @@ export default function Probar() {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", "Estiloapp");
-      
+      // Añade estos estados al principio de tu función Probar()
+const [altura, setAltura] = useState("");
+const [peso, setPeso] = useState("");
+const [tallaSugerida, setTallaSugerida] = useState("");
+
+// Función para calcular talla (Lógica simple de asesoría)
+const calcularTallaSugerida = (a, p) => {
+  if (!a || !p) return "";
+  const imc = p / ((a / 100) ** 2);
+  if (imc < 20) return "S";
+  if (imc < 25) return "M";
+  if (imc < 30) return "L";
+  return "XL";
+};
+
       const cloudRes = await fetch("https://api.cloudinary.com/v1_1/djk1h8mkc/image/upload", { 
         method: "POST", 
         body: formData 
@@ -107,13 +121,38 @@ export default function Probar() {
         </div>
       </section>
 
-      <section style={{ marginBottom: '30px', backgroundColor: '#fff', padding: '20px', borderRadius: '20px' }}>
-        <h3 style={{ fontSize: '18px', marginBottom: '15px' }}>2. Sube tu foto:</h3>
-        <input type="file" accept="image/*" style={{ marginBottom: '20px', width: '100%' }} />
-        <button onClick={enviar} disabled={loading} style={{ width: '100%', padding: '15px', borderRadius: '12px', backgroundColor: '#000', color: '#fff', fontWeight: 'bold' }}>
-          {loading ? `IA trabajando...` : "Generar Mi Look"}
-        </button>
-      </section>
+<section style={{ marginBottom: '30px', backgroundColor: '#fff', padding: '20px', borderRadius: '20px' }}>
+  <h3 style={{ fontSize: '18px', marginBottom: '15px' }}>2. Tus medidas para asesoría:</h3>
+  <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+    <input 
+      type="number" 
+      placeholder="Altura (cm)" 
+      value={altura}
+      onChange={(e) => { setAltura(e.target.value); setTallaSugerida(calcularTallaSugerida(e.target.value, peso)); }}
+      style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #ddd' }} 
+    />
+    <input 
+      type="number" 
+      placeholder="Peso (kg)" 
+      value={peso}
+      onChange={(e) => { setPeso(e.target.value); setTallaSugerida(calcularTallaSugerida(altura, e.target.value)); }}
+      style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #ddd' }} 
+    />
+  </div>
+
+  {tallaSugerida && (
+    <p style={{ backgroundColor: '#eef6ff', color: '#0070f3', padding: '10px', borderRadius: '8px', fontSize: '14px', textAlign: 'center', marginBottom: '15px' }}>
+      Talla sugerida VESTA: <strong>{tallaSugerida}</strong>
+    </p>
+  )}
+
+  <h3 style={{ fontSize: '18px', marginBottom: '15px' }}>3. Sube tu foto:</h3>
+  <input type="file" accept="image/*" style={{ marginBottom: '20px', width: '100%' }} />
+  
+  <button onClick={enviar} disabled={loading} style={{ width: '100%', padding: '15px', borderRadius: '12px', backgroundColor: '#000', color: '#fff', fontWeight: 'bold' }}>
+    {loading ? `IA trabajando...` : "Generar Mi Look"}
+  </button>
+</section>
 
       {result && (
         <section style={{ marginTop: '30px', textAlign: 'center' }}>
