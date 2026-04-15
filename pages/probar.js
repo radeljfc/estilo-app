@@ -96,6 +96,47 @@ const calcularTallaSugerida = (a, p) => {
         setHistorial(nuevoHistorial);
         localStorage.setItem("vesta_historial", JSON.stringify(nuevoHistorial));
       }
+{result && prendas.map((prenda) => (
+  <div key={prenda.id} style={{ marginTop: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '15px', textAlign: 'left' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <h4 style={{ margin: 0 }}>{prenda.nombre}</h4>
+      <span style={{ fontWeight: 'bold', color: '#0070f3' }}>{prenda.precio} {prenda.moneda}</span>
+    </div>
+
+    <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+      {['S', 'M', 'L', 'XL'].map(talla => {
+        const tieneStock = prenda.stock[talla] > 0;
+        const esSugerida = talla === tallaSugerida;
+        
+        return (
+          <div key={talla} style={{
+            padding: '8px 12px',
+            borderRadius: '5px',
+            border: esSugerida ? '2px solid #000' : '1px solid #eee',
+            backgroundColor: tieneStock ? '#fff' : '#f9f9f9',
+            color: tieneStock ? '#000' : '#ccc',
+            fontSize: '12px',
+            position: 'relative'
+          }}>
+            {talla}
+            {esSugerida && tieneStock && <span style={{ position: 'absolute', top: '-8px', right: '-5px', fontSize: '10px' }}>⭐</span>}
+          </div>
+        );
+      })}
+    </div>
+
+    <button 
+      disabled={!prenda.stock[tallaSugerida]}
+      style={{
+        width: '100%', marginTop: '15px', padding: '12px', borderRadius: '10px',
+        backgroundColor: prenda.stock[tallaSugerida] > 0 ? '#0070f3' : '#ccc',
+        color: '#fff', border: 'none', fontWeight: 'bold'
+      }}
+    >
+      {prenda.stock[tallaSugerida] > 0 ? `Pedir en Talla ${tallaSugerida}` : "Sin stock en tu talla"}
+    </button>
+  </div>
+))}
 
     } catch (error) {
       alert("DETALLE: " + error.message);
