@@ -51,24 +51,40 @@ export default function Probar() {
 
       if (!data.success) throw new Error(data.error);
 
-      // 3. Bucle de espera (Polling)
+      // 3. Bucle de espera (Polling)      // ... (código anterior de enviar)
+      
       let status = "starting";
       let finalResult = null;
+      let intentos = 0;
 
-      while (status !== "succeeded" && status !== "failed") {
-        await new Promise(resolve => setTimeout(resolve, 3000)); // Esperar 3 seg
+      while (status !== "succeeded" && status !== "failed" && intentos < 30) {
+        intentos++;
+        // Esperamos 3 segundos entre cada chequeo
+        await new Promise(resolve => setTimeout(resolve, 3000)); 
+        
         const check = await fetch(`/api/verificar?id=${data.predictionId}`);
         const checkData = await check.json();
+        
         status = checkData.status;
-        if (status === "succeeded") finalResult = checkData.output[0];
+        console.log("Estado actual:", status); // Esto ayuda a depurar
+
+        if (status === "succeeded") {
+          finalResult = checkData.output[0];
+          break; 
+        }
+        
+        if (status === "failed") {
+          throw new Error("La IA falló al procesar la imagen.");
+        }
       }
 
       if (finalResult) {
         setResult(finalResult);
         setPrendas(data.prendas);
-      } else {
-        alert("La IA no pudo procesar la imagen");
+      } else if (intentos >= 30) {
+        alert("La IA está tardando demasiado. Revisa tu panel de Replicate.");
       }
+
     } catch (error) {
       alert("Error: " + error.message);
     } finally {
