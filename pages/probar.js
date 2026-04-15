@@ -3,12 +3,12 @@ const estilosDisponibles = [
   {
     id: "urbano",
     nombre: "Urbano Moderno",
-    imagen: "https://i.imgur.com/1X6q9KQ.jpg"
+    imagen: "https://images.unsplash.com/photo-1520975916090-3105956dac38"
   },
   {
     id: "elegante",
     nombre: "Elegante Casual",
-    imagen: "https://i.imgur.com/8Km9tLL.jpg"
+    imagen: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce"
   }
 ];
 import { useRouter } from "next/router";
@@ -158,11 +158,25 @@ setResult({
   <div>
     <h3>Resultado:</h3>
 
-    <p>Tu foto:</p>
-    <img src={result.user} width="150" />
+    <div style={{ position: "relative", width: 250 }}>
+  <img 
+    src={result.user} 
+    width="250" 
+    style={{ borderRadius: 10 }}
+  />
 
-    <p>Estilo aplicado:</p>
-    <img src={result.outfit} width="150" />
+  <img 
+    src={result.outfit} 
+    width="250"
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      opacity: 0.6,
+      borderRadius: 10
+    }}
+  />
+</div>
   </div>
 )}
 
