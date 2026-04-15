@@ -1,41 +1,48 @@
 export default async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).json({ error: "Método no permitido" });
+
   const token = process.env.REPLICATE_API_TOKEN;
+  if (!token) return res.status(500).json({ error: "Falta el token en Vercel (REPLICATE_API_TOKEN)" });
+
+  const { imageUrl, estilo } = req.body;
+  
+  // Fotos de las prendas (Urbano vs Elegante)
+  const garmImg = estilo === "elegante" 
+    ? "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce" 
+    : "https://images.unsplash.com/photo-1520975916090-3105956dac38";
 
   try {
-    const { imageUrl, estilo } = req.body;
-    
-    // Ropa según el estilo
-    const garmImg = estilo === "elegante" 
-      ? "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce" 
-      : "https://images.unsplash.com/photo-1520975916090-3105956dac38";
-
-    // LLAMADA DIRECTA POR HTTP (Sin librerías, más robusto)
-    const response = await fetch("https://api.replicate.com/v1/models/cuuupid/idm-vton/predictions", {
+    const response = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
       headers: {
         "Authorization": `Token ${token.trim()}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        // ESTA ES LA VERSIÓN QUE TE FUNCIONÓ EN LA WEB
+        version: "0513734a81fd5382025816922cf90082f4d38c62c3e41df473950b7308d278bd",
         input: {
           human_img: imageUrl,
           garm_img: garmImg,
-          garment_des: "fashion item",
+          garment_des: "clothing item",
           is_checked: true
         }
       })
     });
 
-    const prediction = await response.json();
+    const data = await response.json();
 
-    // Si aquí sale error, es que el Token de Vercel está mal pegado
-    if (prediction.detail) {
-      return res.status(422).json({ success: false, error: prediction.detail });
+    if (data.detail) {
+      return res.status(422).json({ success: false, error: "Replicate dice: " + data.detail });
     }
 
     return res.status(200).json({
       success: true,
-      predictionId: prediction.id,
+      predictionId: data.id,
+      // Datos del catálogo directo para evitar errores de archivo
+      prendas: [
+        { nombre: "Chaqueta VESTA", precio: "$45", imagen: garmImg, link: "#" }
+      ]
     });
 
   } catch (error) {
