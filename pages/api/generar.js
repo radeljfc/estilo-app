@@ -24,15 +24,17 @@ export default async function handler(req, res) {
         "Authorization": `Token ${token.trim()}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
+            body: JSON.stringify({
+        // Usamos la versión exacta que Replicate confirmó en tus logs anteriores
         version: "0513734a81fd5382025816922cf90082f4d38c62c3e41df473950b7308d278bd",
         input: {
           human_img: imageUrl,
           garm_img: garmImg,
-          garment_des: "clothing item",
+          garment_des: "outfit",
           is_checked: true
         }
       })
+
     });
 
     const prediction = await response.json();
