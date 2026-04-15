@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
     const garmImg = prendasPorEstilo[estilo] || prendasPorEstilo["urbano"];
 
-    // 1. Iniciamos la predicción
+    // USAMOS EL MODELO DE CUUUPID QUE VIMOS EN TU CAPTURA
     const response = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
       headers: {
@@ -24,11 +24,12 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        version: "c871bb9b0e06041a4629961da79f5796f043d3c26b3add9034a78ebda517f093",
+        // Esta es la versión de cuuupid/idm-vton que aparece en tus logs
+        version: "0513734a81fd5382025816922cf90082f4d38c62c3e41df473950b7308d278bd",
         input: {
           human_img: imageUrl,
           garm_img: garmImg,
-          garment_des: `outfit ${estilo}`,
+          garment_des: `A ${estilo} style clothing item`,
           is_checked: true
         }
       })
@@ -36,7 +37,11 @@ export default async function handler(req, res) {
 
     const prediction = await response.json();
 
-    // 2. Respondemos de inmediato con el ID para que Vercel no se cuelgue
+    // Si Replicate nos da error aquí, lo devolvemos para verlo en el móvil
+    if (prediction.detail) {
+      return res.status(422).json({ success: false, error: prediction.detail });
+    }
+
     return res.status(200).json({
       success: true,
       predictionId: prediction.id,
