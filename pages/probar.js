@@ -226,7 +226,7 @@ setResult({
       ))}
     </div>
   </div>
-)}
+)} 
     </div>
   );
 }
