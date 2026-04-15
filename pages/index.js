@@ -1,101 +1,75 @@
-import { useRouter } from "next/router";
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { createClient } from '@supabase/supabase-js';
+
+// Conexión a Supabase
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 export default function Home() {
   const router = useRouter();
+  const [estilos, setEstilos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function obtenerEstilos() {
+      const { data, error } = await supabase.from('estilos').select('*');
+      if (error) console.error("Error cargando estilos:", error);
+      else setEstilos(data || []);
+      setLoading(false);
+    }
+    obtenerEstilos();
+  }, []);
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      backgroundColor: '#ffffff', // Fondo blanco puro
-      color: '#000000',           // Texto negro
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '40px 20px',
-      textAlign: 'center'
-    }}>
-      {/* Logo o Nombre de Marca */}
-      <header style={{ marginBottom: '60px' }}>
-        <h1 style={{ 
-          fontSize: '14px', 
-          letterSpacing: '5px', 
-          textTransform: 'uppercase', 
-          color: '#999', // Gris suave para el "Bienvenido"
-          marginBottom: '10px'
-        }}>
-          Bienvenido a
-        </h1>
-        <h2 style={{ 
-          fontSize: '64px', 
-          fontWeight: '900', 
-          margin: '0',
-          lineHeight: '1',
-          letterSpacing: '-2px'
-        }}>
-          VESTA
-        </h2>
-        <p style={{ 
-          fontSize: '18px', 
-          marginTop: '10px', 
-          color: '#555',
-          fontWeight: '300'
-        }}>
-          Estilo para Ellos
-        </p>
+    <div style={{ padding: '20px', fontFamily: '-apple-system, sans-serif', backgroundColor: '#fff', minHeight: '100vh' }}>
+      <header style={{ textAlign: 'center', marginBottom: '40px', marginTop: '20px' }}>
+        <h1 style={{ fontSize: '40px', fontWeight: '900', letterSpacing: '-1px', margin: '0' }}>VESTA</h1>
+        <p style={{ color: '#666', fontSize: '14px' }}>IA Virtual Fitting Room</p>
       </header>
 
-      {/* Sección Principal */}
-      <main style={{ maxWidth: '300px' }}>
-        <h3 style={{ 
-          fontSize: '24px', 
-          lineHeight: '1.3', 
-          marginBottom: '40px',
-          fontWeight: '400',
-          color: '#333'
-        }}>
-          Redefine tu imagen con el poder de la <span style={{ color: '#0070f3', fontWeight: 'bold' }}>IA</span>.
-        </h3>
+      <section>
+        <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '20px' }}>Tendencias Disponibles</h2>
+        
+        {loading ? (
+          <p>Cargando probador...</p>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+            {estilos.map((estilo) => (
+              <div 
+                key={estilo.id} 
+                onClick={() => router.push(`/probar?estilo=${estilo.id}`)}
+                style={{ cursor: 'pointer', position: 'relative' }}
+              >
+                <img 
+                  src={estilo.foto_portada} 
+                  style={{ width: '100%', height: '220px', objectFit: 'cover', borderRadius: '20px' }} 
+                  alt={estilo.nombre}
+                />
+                <div style={{
+                  position: 'absolute', bottom: '15px', left: '15px', color: '#fff',
+                  textShadow: '0 2px 4px rgba(0,0,0,0.5)'
+                }}>
+                  <p style={{ fontSize: '12px', fontWeight: 'bold', margin: '0', opacity: 0.8 }}>TENDENCIA</p>
+                  <p style={{ fontSize: '16px', fontWeight: 'bold', margin: '0' }}>{estilo.nombre}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
 
+      {/* Acceso rápido al Admin para ti (puedes quitarlo después) */}
+      <footer style={{ marginTop: '50px', textAlign: 'center' }}>
         <button 
-          onClick={() => router.push("/probar")}
-          style={{
-            backgroundColor: '#000000', // Botón negro
-            color: '#ffffff',           // Texto blanco
-            border: 'none',
-            padding: '18px 40px',
-            borderRadius: '50px',
-            fontSize: '18px',
-            fontWeight: 'bold',
-            width: '100%',
-            cursor: 'pointer',
-            boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
-            transition: 'transform 0.2s ease'
-          }}
+          onClick={() => router.push('/admin')}
+          style={{ background: 'none', border: 'none', color: '#ccc', fontSize: '12px' }}
         >
-          Comenzar Prueba
+          Acceso Administrador
         </button>
-      </main>
-
-      {/* Footer */}
-      <footer style={{ marginTop: '80px' }}>
-        <p style={{ 
-          fontSize: '12px', 
-          color: '#aaa', 
-          maxWidth: '250px',
-          lineHeight: '1.5'
-        }}>
-          Prueba virtual inteligente. <br /> 
-          Conserva tu esencia, mejora tu outfit.
-        </p>
       </footer>
-
-      <style jsx>{`
-        button:active {
-          transform: scale(0.95);
-        }
-      `}</style>
     </div>
   );
 }
