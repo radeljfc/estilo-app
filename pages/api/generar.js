@@ -25,7 +25,9 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         // Esta es la versión de cuuupid/idm-vton que aparece en tus logs
-        version: "0513734a81fd5382025816922cf90082f4d38c62c3e41df473950b7308d278bd",
+        // Este será el código definitivo para generar.js
+version: "0513734a81fd5382025816922cf90082f4d38c62c3e41df473950b7308d278bd",
+
         input: {
           human_img: imageUrl,
           garm_img: garmImg,
