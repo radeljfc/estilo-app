@@ -24,7 +24,7 @@ export default function Probar() {
   const [estilo, setEstilo] = useState(null);
   const [prendas, setPrendas] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [intento, setIntento] = useState(false);
   useEffect(() => {
     if (estiloQuery) {
       setEstiloSeleccionado(estiloQuery);
@@ -51,7 +51,7 @@ export default function Probar() {
   const enviar = async () => {
     try {
       setLoading(true);
-
+      setIntento(true);
       const fileInput = document.querySelector('input[type="file"]');
       const file = fileInput.files[0];
 
@@ -151,12 +151,14 @@ console.log("RESPUESTA IA:", data);
         {loading ? "Generando..." : "Generar estilo"}
       </button>
 
-      {result ? (
+{result && (
   <div>
     <h3>Resultado:</h3>
     <img src={result} width="300" />
   </div>
-) : (
+)}
+
+{intento && !result && !loading && (
   <p>No se pudo generar imagen</p>
 )}
 
