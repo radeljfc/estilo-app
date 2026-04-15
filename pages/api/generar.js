@@ -19,17 +19,20 @@ export default async function handler(req, res) {
     const garmImg = prendasPorEstilo[estilo] || prendasPorEstilo["urbano"];
 
     // NUEVA VERSIÓN ACTUALIZADA (IDM-VTON)
-    const output = await replicate.run(
-      "yisol/idm-vton:c871bb9b0e06041a4629961da79f5796f043d3c26b3add9034a78ebda517f093",
-      {
-        input: {
-          human_img: imageUrl,
-          garm_img: garmImg,
-          garment_des: `outfit ${estilo}`,
-          is_checked: true
-        }
-      }
-    );
+    // UBICACIÓN: pages/api/generar.js
+
+const output = await replicate.run(
+  "cuuupid/idm-vton:906921333a9293a3ef947a46fa337c6802613b361191e4f358f00078028d7037",
+  {
+    input: {
+      human_img: imageUrl,
+      garm_img: garmImg,
+      garment_des: `outfit ${estilo}`,
+      is_checked: true
+    }
+  }
+);
+
 
     const resultadoIA = Array.isArray(output) ? output[0] : output;
 
