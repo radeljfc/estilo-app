@@ -194,18 +194,39 @@ setResult({
         <div>
           <h4>Prendas recomendadas:</h4>
 <div>
-  {prendas.map((p, i) => (
-    <div key={i} style={{ marginBottom: 10 }}>
-      <p><strong>{p.nombre}</strong></p>
-      <p>{p.precio}</p>
-      <a href={p.link} target="_blank">
-        <button>Comprar</button>
-      </a>
-    </div>
-  ))}
-</div>
+{prendas.length > 0 && (
+  <div>
+    <h4>Prendas recomendadas:</h4>
+
+    <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
+      {prendas.map((p, i) => (
+        <div 
+          key={i} 
+          style={{
+            border: "1px solid #ddd",
+            borderRadius: 10,
+            padding: 10,
+            width: 150,
+            textAlign: "center"
+          }}
+        >
+          <img 
+            src={p.imagen} 
+            width="100%" 
+            style={{ borderRadius: 10 }}
+          />
+
+          <p><strong>{p.nombre}</strong></p>
+          <p>{p.precio}</p>
+
+          <a href={p.link} target="_blank">
+            <button>Comprar</button>
+          </a>
         </div>
-      )}
+      ))}
+    </div>
+  </div>
+)}
     </div>
   );
 }
