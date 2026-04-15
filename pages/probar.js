@@ -193,11 +193,17 @@ setResult({
       {prendas.length > 0 && (
         <div>
           <h4>Prendas recomendadas:</h4>
-          <ul>
-            {prendas.map((p, i) => (
-              <li key={i}>{p}</li>
-            ))}
-          </ul>
+<div>
+  {prendas.map((p, i) => (
+    <div key={i} style={{ marginBottom: 10 }}>
+      <p><strong>{p.nombre}</strong></p>
+      <p>{p.precio}</p>
+      <a href={p.link} target="_blank">
+        <button>Comprar</button>
+      </a>
+    </div>
+  ))}
+</div>
         </div>
       )}
     </div>
