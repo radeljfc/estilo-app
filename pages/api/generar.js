@@ -26,7 +26,7 @@ export default async function handler(req, res) {
       },
             body: JSON.stringify({
         // Usamos la versión exacta que Replicate confirmó en tus logs anteriores
-        version: "0513734a81fd5382025816922cf90082f4d38c62c3e41df473950b7308d278bd",
+        version: "ac732d54604f39e3b79488cd7a863c374571853a4ae3f8683574163993967a18",
         input: {
           human_img: imageUrl,
           garm_img: garmImg,
