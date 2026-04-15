@@ -1,6 +1,6 @@
 import Replicate from "replicate";
 import catalogo from "../../data/catalogo";
-
+ 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
 });
