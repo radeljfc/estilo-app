@@ -70,9 +70,24 @@ export default function Probar() {
       }
 
       // 4. Mostrar Resultado
-      const nuevaImagen = finalData.output[finalData.output.length - 1];
-      setResult(nuevaImagen);
-      setPrendas(data.prendas || []);
+            // 4. Mostrar Resultado (Copia y pega esto sobre tu sección 4)
+      if (finalData && finalData.output) {
+        // Esta línea extrae la imagen final correctamente aunque sea una lista
+        const nuevaImagen = Array.isArray(finalData.output) 
+          ? finalData.output[finalData.output.length - 1] 
+          : finalData.output;
+        
+        setResult(nuevaImagen);
+        setPrendas(data.prendas || []);
+
+        // Guardar en historial
+        const nuevoHistorial = [{ imagen: nuevaImagen, estilo: estiloSeleccionado }, ...historial].slice(0, 10);
+        setHistorial(nuevoHistorial);
+        localStorage.setItem("vesta_historial", JSON.stringify(nuevoHistorial));
+      } else {
+        throw new Error("La IA terminó pero no entregó una imagen válida.");
+      }
+
 
       // Guardar en historial
       const nuevoHistorial = [{ imagen: nuevaImagen, estilo: estiloSeleccionado }, ...historial].slice(0, 10);
@@ -98,24 +113,24 @@ export default function Probar() {
         <button onClick={enviar} disabled={loading} style={{ width: '100%', padding: '15px', borderRadius: '12px', backgroundColor: '#000', color: '#fff', fontSize: '16px', fontWeight: 'bold', border: 'none' }}>
           {loading ? `IA trabajando...` : "Generar Mi Look"}
         </button>
-      </section>
-      {/* Mostrar resultado si existe */}
-      // En la parte del resultado (donde está el img del resultado)
-{result && (
-  <section style={{ marginTop: '30px', textAlign: 'center' }}>
-    <h3 style={{ fontSize: '22px', marginBottom: '15px' }}>¡Tu Look está listo!</h3>
-    <img 
-      src={result} 
-      key={result} // Esto obliga al iPhone a recargar la imagen si cambia
-      style={{ width: '100%', maxWidth: '400px', borderRadius: '25px', display: 'block', margin: '0 auto' }} 
-      onError={(e) => {
-        console.log("Reintentando carga...");
-        setTimeout(() => { e.target.src = result + "?t=" + new Date().getTime(); }, 2000);
-      }}
-    />
-  </section>
-)}
+            </section>
 
+      {/* RESULTADO ACTUAL */}
+      {result && (
+        <section style={{ marginTop: '30px', textAlign: 'center' }}>
+          <h3 style={{ fontSize: '22px', marginBottom: '15px' }}>¡Tu Look está listo!</h3>
+          <img 
+            src={result} 
+            key={result} 
+            style={{ width: '100%', maxWidth: '400px', borderRadius: '25px', display: 'block', margin: '0 auto', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }} 
+            onError={(e) => {
+              // Si falla la carga (cuadro azul), intenta recargar 3 veces
+              console.log("Reintentando carga...");
+              setTimeout(() => { e.target.src = result + "?t=" + new Date().getTime(); }, 2000);
+            }}
+          />
+        </section>
+      )}
     </div>
   );
 }
