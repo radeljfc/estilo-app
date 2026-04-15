@@ -1,30 +1,48 @@
+import Replicate from "replicate";
+
 export default async function handler(req, res) {
   try {
     const { imageUrl, estilo } = req.body;
 
-    // 👕 estilos simulados
-    let prendas = [];
-    let nombreEstilo = "";
+    const replicate = new Replicate({
+      auth: process.env.REPLICATE_API_TOKEN,
+    });
+
+    // 👕 IMÁGENES DE ROPA SEGÚN ESTILO
+    let cloth = "";
 
     if (estilo === "urbano") {
-      nombreEstilo = "Urbano Moderno";
-      prendas = ["Hoodie negro", "Jeans rotos", "Zapatillas blancas"];
+      cloth = "https://i.imgur.com/3QbZ4sG.png"; // hoodie ejemplo
     }
 
     if (estilo === "elegante") {
-      nombreEstilo = "Elegante Casual";
-      prendas = ["Blazer beige", "Camisa blanca", "Pantalón slim"];
+      cloth = "https://i.imgur.com/0nQGJ3B.png"; // blazer ejemplo
     }
 
-    // 🔥 devolvemos la MISMA imagen (estable)
+    // 🔥 MODELO TRY-ON REAL
+    const output = await replicate.run(
+      "cuuupid/idm-vton",
+      {
+        input: {
+          human_img: imageUrl,
+          garm_img: cloth
+        }
+      }
+    );
+
     res.status(200).json({
-      image: imageUrl,
-      estilo: nombreEstilo,
-      prendas: prendas
+      image: output,
+      estilo: estilo,
+      prendas: ["Outfit aplicado con IA"]
     });
 
   } catch (error) {
-    console.error("ERROR:", error);
-    res.status(500).json({ error: "error backend" });
+    console.error("ERROR IA:", error);
+
+    res.status(200).json({
+      image: null,
+      estilo: estilo,
+      prendas: []
+    });
   }
 }
