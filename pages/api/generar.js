@@ -9,6 +9,7 @@ export default async function handler(req, res) {
   try {
     const { imageUrl, estilo } = req.body;
 
+    // Imágenes de prendas de ejemplo
     const prendasPorEstilo = {
       urbano: "https://images.unsplash.com/photo-1520975916090-3105956dac38",
       elegante: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce"
@@ -16,7 +17,7 @@ export default async function handler(req, res) {
 
     const garmImg = prendasPorEstilo[estilo] || prendasPorEstilo["urbano"];
 
-    // USAMOS EL MODELO DE CUUUPID QUE VIMOS EN TU CAPTURA
+    // LLAMADA AL MODELO CUUUPID (Versión verificada de tus logs)
     const response = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
       headers: {
@@ -24,14 +25,11 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        // Esta es la versión de cuuupid/idm-vton que aparece en tus logs
-        // Este será el código definitivo para generar.js
-version: "0513734a81fd5382025816922cf90082f4d38c62c3e41df473950b7308d278bd",
-
+        version: "0513734a81fd5382025816922cf90082f4d38c62c3e41df473950b7308d278bd",
         input: {
           human_img: imageUrl,
           garm_img: garmImg,
-          garment_des: `A ${estilo} style clothing item`,
+          garment_des: "clothing item",
           is_checked: true
         }
       })
@@ -39,7 +37,7 @@ version: "0513734a81fd5382025816922cf90082f4d38c62c3e41df473950b7308d278bd",
 
     const prediction = await response.json();
 
-    // Si Replicate nos da error aquí, lo devolvemos para verlo en el móvil
+    // Si hay error en la respuesta de Replicate, lo capturamos aquí
     if (prediction.detail) {
       return res.status(422).json({ success: false, error: prediction.detail });
     }
