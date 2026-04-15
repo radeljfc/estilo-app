@@ -1,4 +1,4 @@
-import { catalogo } from "../../data/catalogo";
+import catalogo from "../../data/catalogo";
 prendas = catalogo[estilo] || [];
 export default async function handler(req, res) {
   try {
