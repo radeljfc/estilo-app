@@ -6,8 +6,8 @@ export default function Home() {
   return (
     <div style={{ 
       minHeight: '100vh', 
-      backgroundColor: '#000', // Fondo negro para un look premium
-      color: '#fff',
+      backgroundColor: '#ffffff', // Fondo blanco puro
+      color: '#000000',           // Texto negro
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
       display: 'flex',
       flexDirection: 'column',
@@ -22,7 +22,7 @@ export default function Home() {
           fontSize: '14px', 
           letterSpacing: '5px', 
           textTransform: 'uppercase', 
-          color: '#888',
+          color: '#999', // Gris suave para el "Bienvenido"
           marginBottom: '10px'
         }}>
           Bienvenido a
@@ -31,14 +31,15 @@ export default function Home() {
           fontSize: '64px', 
           fontWeight: '900', 
           margin: '0',
-          lineHeight: '1'
+          lineHeight: '1',
+          letterSpacing: '-2px'
         }}>
           VESTA
         </h2>
         <p style={{ 
           fontSize: '18px', 
           marginTop: '10px', 
-          color: '#ccc',
+          color: '#555',
           fontWeight: '300'
         }}>
           Estilo para Ellos
@@ -51,7 +52,8 @@ export default function Home() {
           fontSize: '24px', 
           lineHeight: '1.3', 
           marginBottom: '40px',
-          fontWeight: '400' 
+          fontWeight: '400',
+          color: '#333'
         }}>
           Redefine tu imagen con el poder de la <span style={{ color: '#0070f3', fontWeight: 'bold' }}>IA</span>.
         </h3>
@@ -59,8 +61,8 @@ export default function Home() {
         <button 
           onClick={() => router.push("/probar")}
           style={{
-            backgroundColor: '#fff',
-            color: '#000',
+            backgroundColor: '#000000', // Botón negro
+            color: '#ffffff',           // Texto blanco
             border: 'none',
             padding: '18px 40px',
             borderRadius: '50px',
@@ -68,7 +70,7 @@ export default function Home() {
             fontWeight: 'bold',
             width: '100%',
             cursor: 'pointer',
-            boxShadow: '0 10px 20px rgba(255,255,255,0.1)',
+            boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
             transition: 'transform 0.2s ease'
           }}
         >
@@ -76,11 +78,11 @@ export default function Home() {
         </button>
       </main>
 
-      {/* Footer / Nota Legal */}
+      {/* Footer */}
       <footer style={{ marginTop: '80px' }}>
         <p style={{ 
           fontSize: '12px', 
-          color: '#555', 
+          color: '#aaa', 
           maxWidth: '250px',
           lineHeight: '1.5'
         }}>
