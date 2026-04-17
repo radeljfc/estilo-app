@@ -31,14 +31,23 @@ export default function AdminVesta() {
   const guardarEnNube = async () => {
     setLoading(true);
     try {
-      // 1. Limpiamos la tabla para evitar duplicados (estrategia simple)
+      // --- MODIFICACIÓN AQUÍ ---
+      // Creamos una copia de los estilos pero ELIMINAMOS el 'id' de cada uno
+      // para que Supabase lo genere automáticamente.
+      const estilosLimpios = estilos.map(({ id, ...resto }) => resto);
+
+      // 1. Limpiamos la tabla para evitar duplicados
       await supabase.from('estilos').delete().neq('nombre', 'borrar_todo_si_existe');
       
-      // 2. Insertamos los estilos actuales
-      const { error } = await supabase.from('estilos').insert(estilos);
+      // 2. Insertamos los estilos limpios (sin el campo ID)
+      const { error } = await supabase.from('estilos').insert(estilosLimpios);
       
       if (error) throw error;
       alert("✅ ¡Inventario VESTA actualizado con éxito!");
+      
+      // Recargamos los datos para obtener los IDs reales generados por la base de datos
+      cargarDatos();
+      
     } catch (error) {
       alert("❌ Error al guardar: " + error.message);
     } finally {
@@ -91,7 +100,7 @@ export default function AdminVesta() {
           </div>
 
           <h3 style={{ fontSize: '16px', borderTop: '1px solid #f0f0f0', paddingTop: '15px', marginBottom: '15px' }}>Inventario de Prendas:</h3>
-          {estilo.prendas.map((prenda, pIdx) => (
+          {estilo.prendas && estilo.prendas.map((prenda, pIdx) => (
             <div key={pIdx} style={{ padding: '15px', backgroundColor: '#fcfcfc', borderRadius: '12px', marginBottom: '15px', border: '1px solid #f0f0f0' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '15px' }}>
                 <input placeholder="Nombre" value={prenda.nombre} style={{padding:'8px'}} onChange={(e) => {
@@ -138,6 +147,7 @@ export default function AdminVesta() {
           <div style={{display:'flex', justifyContent:'space-between'}}>
             <button onClick={() => {
                const copia = [...estilos];
+               if(!copia[idx].prendas) copia[idx].prendas = [];
                copia[idx].prendas.push({ id: Date.now(), nombre: "Nueva Prenda", precio: 0, moneda: "USD", stock: {S:0, M:0, L:0, XL:0} });
                setEstilos(copia);
             }} style={{ fontSize: '13px', color: '#0070f3', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>+ Añadir Prenda</button>
