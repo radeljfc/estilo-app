@@ -112,11 +112,13 @@ export default function Home() {
                   boxShadow: '0 4px 15px rgba(0,0,0,0.05)'
                 }}
               >
-                <img 
-                  src={estilo.foto_portada} 
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                  alt={estilo.nombre}
-                />
+  <img 
+  src={estilo.foto_portada || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f'} 
+  onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f'; }}
+  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+  alt={estilo.nombre}
+/>
+
                 <div style={{
                   position: 'absolute', bottom: '0', left: '0', right: '0',
                   padding: '15px', background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
